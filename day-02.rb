@@ -1,10 +1,12 @@
 require_relative 'common'
 
 class Day2 < AdventDay
-  EXPECTED_RESULTS = { 1 => 15 }
+  EXPECTED_RESULTS = { 1 => 15, 2 => 12 }
 
   OPPONENT_MOVES = { 'A' => :rock, 'B' => :paper, 'C' => :scissors }
+
   MY_MOVES = { 'X' => :rock, 'Y' => :paper, 'Z' => :scissors }
+  RESULTS = { 'X' => :lose, 'Y' => :draw, 'Z' => :win }
 
   WINNING_MOVES = [
     [:paper, :rock],
@@ -15,16 +17,19 @@ class Day2 < AdventDay
 
   def first_part
     first_part_rounds.sum do |(opponent_move, my_move)|
-      round_points = case winner(opponent_move, my_move)
-      when 0  then 0 # lose
-      when 1  then 6 # win
-      when -1 then 3 # draw
-      end
-      round_points + points_for(my_move)
+      round_points(winner(opponent_move, my_move)) + points_for(my_move)
     end
   end
 
   def second_part
+    second_part_rounds.sum do |(opponent_move, result)|
+      my_move = case result
+      when :draw then opponent_move
+      when :lose then LOSING_MOVES.find { |pairs| pairs.last == opponent_move }.first
+      when :win  then WINNING_MOVES.find { |pairs| pairs.last == opponent_move }.first
+      end
+      round_points(result) + points_for(my_move)
+    end
   end
 
   private
@@ -35,11 +40,25 @@ class Day2 < AdventDay
     end
   end
 
+  def second_part_rounds
+    instructions.map do |(opponent_move, instruction)|
+      [OPPONENT_MOVES[opponent_move], RESULTS[instruction]]
+    end
+  end
+
   def winner(move_a, move_b)
     case
-    when WINNING_MOVES.include?([move_a, move_b]) then 0
-    when LOSING_MOVES.include?([move_a, move_b]) then 1
-    else -1
+    when WINNING_MOVES.include?([move_a, move_b]) then :win
+    when LOSING_MOVES.include?([move_a, move_b]) then :lose
+    else :draw
+    end
+  end
+
+  def round_points(winlose)
+    case winlose
+    when :lose then 0 # lose
+    when :draw then 3 # draw
+    when :win  then 6 # win
     end
   end
 
