@@ -1,23 +1,24 @@
 require_relative 'common'
 
 class Day1 < AdventDay
+  EXPECTED_RESULTS = { 1 => 24000, 2 => 45000 }
+
   def first_part
-    input.last(2).sum
+    elves.map(&:sum).max
   end
 
   def second_part
-    input.last(2).map(&:to_s).map(&:reverse).map(&:to_i).sum
+    elves.map(&:sum).sort.last(3).sum
   end
 
   private
 
   def convert_data(data)
-    super.map(&:to_i)
+    data.
+      split("\n\n").
+      map { |group| group.split("\n").map(&:to_i) }
   end
-
-  def debug_input
-    "12\n34\n56"
-  end
+  alias_method :elves, :input
 end
 
 Day1.solve
