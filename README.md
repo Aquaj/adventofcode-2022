@@ -30,7 +30,7 @@ with other competitors.
 | ✔     | [Day 2: Rock Paper Scissors](https://adventofcode.com/2022/day/2)     | 🌟       | 🌟       | [Solution](day-02.rb)
 | ✔     | [Day 3: Rucksack Reorganization](https://adventofcode.com/2022/day/3) | 🌟       | 🌟       | [Solution](day-03.rb)
 | ✔     | [Day 4: Camp Cleanup](https://adventofcode.com/2022/day/4)            | 🌟       | 🌟       | [Solution](day-04.rb)
-|       | [Day 5: TBD](https://adventofcode.com/2022/day/5)                     |          |          | [Solution](day-05.rb)
+| ✔     | [Day 5: Supply Stacks](https://adventofcode.com/2022/day/5)           | 🌟       | 🌟       | [Solution](day-05.rb)
 |       | [Day 6: TBD](https://adventofcode.com/2022/day/6)                     |          |          | [Solution](day-06.rb)
 |       | [Day 7: TBD](https://adventofcode.com/2022/day/7)                     |          |          | [Solution](day-07.rb)
 |       | [Day 8: TBD](https://adventofcode.com/2022/day/8)                     |          |          | [Solution](day-08.rb)
