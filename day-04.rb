@@ -15,7 +15,7 @@ class Day4 < AdventDay
 
   def convert_data(data)
     super.map do |assignments|
-      first, second = assign.split(',')
+      first, second = assignments.split(',')
       [first, second].map do |assignment|
         first_section, last_section = assignment.split('-')
         (first_section..last_section)
