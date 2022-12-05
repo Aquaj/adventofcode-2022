@@ -1,6 +1,8 @@
 require_relative 'common'
 
 class Day5 < AdventDay
+  EXPECTED_RESULTS = { 1 => "CMZ", 2 => "MCD" }
+
   def first_part
     input[:instructions].each_with_object(input[:crates].dup) do |(how_many, from, to), crates|
       to_move = how_many.times.map { crates[from - 1].shift }
