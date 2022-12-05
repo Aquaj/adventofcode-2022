@@ -36,22 +36,15 @@ class Day5 < AdventDay
   def add_many(crates, column) =
     crates.reverse_each { |crate| add_one(crate, column) }
 
-  # " [D] " or "     " but padding might be absent
-  # on start and end crates
-  CRATE_PATTERN = / ?(?:\[([\w ])\]|  ) ?/
-
   def convert_data(data)
     raw_crates, raw_instructions = data.split("\n\n")
     [parse_crates(raw_crates), parse_instructions(raw_instructions)]
   end
 
   def parse_crates(raw)
-    *crates, _labels = raw.split("\n")
-    columns = crates.map do |row|
-      row.scan(CRATE_PATTERN).map(&:unwrap)
-    end.transpose
-
-    columns.map(&:compact)
+    cols = raw.split("\n").map(&:chars).transpose
+    stacks = cols.select { |col| col.last != " " } # Removing aesthetic additions
+    stacks.map { |(*stack, _label)| stack - [" "] } # Trimming off label and empty spaces
   end
 
   def parse_instructions(raw)
