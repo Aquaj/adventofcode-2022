@@ -4,29 +4,62 @@ class Day5 < AdventDay
   EXPECTED_RESULTS = { 1 => "CMZ", 2 => "MCD" }
 
   def first_part
-    input[:instructions].each_with_object(input[:crates].dup) do |(how_many, from, to), crates|
-      to_move = how_many.times.map { crates[from - 1].shift }
-      to_move.each { |crate| crates[to - 1].unshift crate }
-    end.map(&:first).join
+    crates, instructions = *input
+
+    result_stacks = instructions.each_with_object(crates.dup) do |(number, from, to), crates|
+      to_move = remove_many(number, crates[from])
+      to_move.each { |crate| add_one(crate, crates[to]) }
+    end
+
+    result_stacks.map(&:first).join
   end
 
   def second_part
-    input[:instructions].each_with_object(input[:crates].dup) do |(how_many, from, to), crates|
-      to_move = how_many.times.map { crates[from - 1].shift }
-      to_move.reverse_each { |crate| crates[to - 1].unshift crate }
-    end.map(&:first).join
+    crates, instructions = *input
+
+    result_stacks = instructions.each_with_object(crates.dup) do |(number, from, to), crates|
+      to_move = remove_many(number, crates[from])
+      add_many(to_move, crates[to])
+    end
+
+    result_stacks.map(&:first).join
   end
 
   private
 
+  def remove_many(number, column) =
+    number.times.map { column.shift }
+
+  def add_one(crate, column) =
+    column.unshift crate
+
+  def add_many(crates, column) =
+    crates.reverse_each { |crate| add_one(crate, column) }
+
+  # " [D] " or "     " but padding might be absent
+  # on start and end crates
+  CRATE_PATTERN = / ?(?:\[([\w ])\]|  ) ?/
+
   def convert_data(data)
-    crates, instructions = data.split("\n\n")
-    *crates, _labels = crates.split("\n")
-    crates = crates.map do |row|
-      row.chars.each_slice(4).to_a.map { |crate| crate.join.strip[1] }
-    end.transpose.map(&:compact)
-    instructions = instructions.split("\n").map { |ins| ins.match(/move (\d+) from (\d+) to (\d+)/).captures.map(&:to_i) }
-    { crates: crates, instructions: instructions }
+    raw_crates, raw_instructions = data.split("\n\n")
+    [parse_crates(raw_crates), parse_instructions(raw_instructions)]
+  end
+
+  def parse_crates(raw)
+    *crates, _labels = raw.split("\n")
+    columns = crates.map do |row|
+      row.scan(CRATE_PATTERN).map(&:unwrap)
+    end.transpose
+
+    columns.map(&:compact)
+  end
+
+  def parse_instructions(raw)
+    instructions = raw.split("\n")
+    instructions.map do |instruction|
+      how_many, from, to = instruction.match(/move (\d+) from (\d+) to (\d+)/).captures
+      [how_many.to_i, from.to_i - 1, to.to_i - 1] # 0-indexing
+    end
   end
 end
 
