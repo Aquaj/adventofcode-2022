@@ -9,6 +9,10 @@ class Day5 < AdventDay
   end
 
   def second_part
+    input[:instructions].each_with_object(input[:crates].dup) do |(how_many, from, to), crates|
+      to_move = how_many.times.map { crates[from - 1].shift }
+      to_move.reverse_each { |crate| crates[to - 1].unshift crate }
+    end.map(&:first).join
   end
 
   private
