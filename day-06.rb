@@ -15,6 +15,14 @@ class Day6 < AdventDay
   end
 
   def second_part
+    stream = input.each_cons(14)
+    place = 14
+    chars = stream.next
+    until chars.uniq.size == chars.size
+      place += 1
+      chars = stream.next
+    end
+    place
   end
 
   private
