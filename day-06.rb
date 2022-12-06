@@ -5,24 +5,16 @@ class Day6 < AdventDay
 
   def first_part
     stream = input.each_cons(4)
-    place = 4
-    chars = stream.next
-    until chars.uniq.size == chars.size
-      place += 1
-      chars = stream.next
-    end
-    place
+    place = stream.next.size
+    place += 1 until stream.next.then { |data| data.uniq.size == data.size }
+    place + 1
   end
 
   def second_part
     stream = input.each_cons(14)
-    place = 14
-    chars = stream.next
-    until chars.uniq.size == chars.size
-      place += 1
-      chars = stream.next
-    end
-    place
+    place = stream.next.size
+    place += 1 until stream.next.then { |data| data.uniq.size == data.size }
+    place + 1
   end
 
   private
