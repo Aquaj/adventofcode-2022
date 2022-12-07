@@ -1,12 +1,12 @@
 require_relative 'common'
 
 class Day7 < AdventDay
-  EXPECTED_RESULTS = { 1 => 95437, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 95437, 2 => 24933642 }
 
   def first_part
     tree = filesystem[:tree]
     sizes = compute_sizes('/', tree)
-    dirs = directories(tree)
+    dirs = [[], *directories(tree)]
     sizes.
       select { |path, _size| dirs.include?(path) }.
       select { |_path, size| size <= 100_000 }.
@@ -14,6 +14,15 @@ class Day7 < AdventDay
   end
 
   def second_part
+    tree = filesystem[:tree]
+    sizes = compute_sizes('/', tree)
+    dirs = directories(tree)
+    remaining_space = 70_000_000 - sizes[[]]
+    sizes.
+      select { |path, _size| dirs.include?(path) }.
+      sort_by { |_dir, size| size }.
+      find { |dir, size| remaining_space + size >= 30_000_000 }.
+      last
   end
 
   private
