@@ -3,49 +3,29 @@ require_relative 'common'
 class Day7 < AdventDay
   EXPECTED_RESULTS = { 1 => 95437, 2 => 24933642 }
 
-  STORAGE_SIZE = 70_000_000
-  NEEDED_SPACE = 30_000_000
-
   SMALL_FOLDER_SIZE = 100_000
-
   def first_part
-    tree = filesystem.tree
-    sizes = compute_sizes(tree)
-
-    sizes.
-      select { |path, _size| filesystem.directories.include?(path) }.
-      select { |_path, size| size <= SMALL_FOLDER_SIZE }.
-      sum { |_path, size| size }
+    filesystem.directories.
+      map { |path| filesystem.filesize_for(path) }.
+      select { |size| size <= SMALL_FOLDER_SIZE }.
+      sum
   end
 
+  NEEDED_SPACE = 30_000_000
   def second_part
-    tree = filesystem.tree
-    sizes = compute_sizes(tree)
-
-    remaining_space = STORAGE_SIZE - sizes[ROOT_PATH]
-
-    dir, freeable_space = sizes.
-      select { |path, _size| filesystem.directories.include?(path) }.
+    dir, freeable_space = filesystem.directories.
+      map { |path| [path, filesystem.filesize_for(path)] }.
       sort_by { |_dir, size| size }.
-      find { |dir, freeable| remaining_space + freeable >= NEEDED_SPACE }
+      find { |dir, freeable| filesystem.remaining_space + freeable >= NEEDED_SPACE }
+
     freeable_space
   end
 
   private
 
-  def compute_sizes(contents, size_list = {}, currpath = ROOT_PATH)
-    return size_list.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
-
-    # Compute entry sizes
-    contents.each { |entry, value| compute_sizes(value, size_list, [*currpath, entry]) }
-    # Current path size == sum of all entries
-    size_list[currpath] = contents.sum { |entry, _| size_list[[*currpath,  entry]] }
-
-    size_list
-  end
-
-  class FileSystemParser
+  class FileSystem
     ROOT_PATH = [].freeze
+    STORAGE_SIZE = 70_000_000
 
     attr_reader :current_path, :tree, :directories
 
@@ -56,37 +36,67 @@ class Day7 < AdventDay
       @directories = []
     end
 
+    module Parsing
+      def parse_ls(_arg, output)
+        output.each_with_object(path_contents(@current_path)) do |entry, contents|
+          case entry
+          when /^dir .*$/
+            _, dirname = entry.split
+            contents[dirname] ||= {}
+
+            @directories << [*@current_path, dirname]
+          else
+            size, filename = entry.split
+            contents[filename] = size.to_i
+          end
+        end
+      end
+
+      def parse_cd(arg, _output)
+        case arg
+        when '/'
+          @current_path = ROOT_PATH.dup
+        when '..'
+          @current_path.pop
+        else
+          @current_path << arg
+        end
+      end
+    end
+    include Parsing
+
+    def remaining_space
+      STORAGE_SIZE - filesize_for(ROOT_PATH)
+    end
+
+    def filesize_for(path)
+      filesizes[path]
+    end
+
+    def filesizes
+      return @filesizes if defined? @filesizes
+
+      @filesizes = {}
+      compute_sizes(@tree, ROOT_PATH)
+      @filesizes
+    end
+
+    private
+
     def path_contents(path)
       path.reduce(@tree) { |tree, dir| tree[dir] ||= {} }
     end
 
-    def parse_ls(_arg, output)
-      output.each_with_object(path_contents(@current_path)) do |entry, contents|
-        case entry
-        when /^dir .*$/
-          _, dirname = entry.split
-          contents[dirname] ||= {}
-          @directories << [*@current_path, dirname]
-        else
-          size, filename = entry.split
-          contents[filename] = size.to_i
-        end
-      end
-    end
+    def compute_sizes(contents, currpath)
+      return @filesizes.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
 
-    def parse_cd(arg, _output)
-      case arg
-      when '/'
-        @current_path = ROOT_PATH.dup
-      when '..'
-        @current_path.pop
-      else
-        @current_path << arg
+      # Current path size == sum of all entries
+      @filesizes[currpath] = contents.sum do |entry, content|
+        compute_sizes(content, [*currpath, entry])
+        @filesizes[[*currpath,  entry]]
       end
     end
   end
-
-  ROOT_PATH = FileSystemParser::ROOT_PATH
 
   def filesystem
     @filesytem ||= input.each_with_object(FileSystemParser.new) do |cmd, fs|
