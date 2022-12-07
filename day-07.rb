@@ -34,6 +34,7 @@ class Day7 < AdventDay
       @tree = {}
 
       @directories = []
+      @filesizes = {}
     end
 
     module Parsing
@@ -48,6 +49,8 @@ class Day7 < AdventDay
           else
             size, filename = entry.split
             contents[filename] = size.to_i
+
+            register_filesize(filename, size)
           end
         end
       end
@@ -70,31 +73,25 @@ class Day7 < AdventDay
     end
 
     def filesize_for(path)
-      filesizes[path]
+      @filesizes[path]
     end
 
-    def filesizes
-      return @filesizes if defined? @filesizes
+    def register_filesize(filename, size)
+      paths_containing = [*@current_path, filename].reverse.each_with_object([]) do |path, keys|
+        keys.map! { |key| [path, *key] }
+        keys << [path]
+      end
 
-      @filesizes = {}
-      compute_sizes(@tree, ROOT_PATH)
-      @filesizes
+      [ROOT_PATH, *paths_containing].each do |path|
+        @filesizes[path] ||= 0
+        @filesizes[path] += size.to_i
+      end
     end
 
     private
 
     def path_contents(path)
       path.reduce(@tree) { |tree, dir| tree[dir] ||= {} }
-    end
-
-    def compute_sizes(contents, currpath)
-      return @filesizes.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
-
-      # Current path size == sum of all entries
-      @filesizes[currpath] = contents.sum do |entry, content|
-        compute_sizes(content, [*currpath, entry])
-        @filesizes[[*currpath,  entry]]
-      end
     end
   end
 
