@@ -44,44 +44,49 @@ class Day7 < AdventDay
     [currpath, *subdir_paths.map { |path| [*currpath, *path] }]
   end
 
+  def compute_sizes(treetop, contents, size_list = {}, currpath = ROOT_PATH)
+    return size_list.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
+
+    # Compute entry sizes
+    contents.each { |entry, value| compute_sizes(entry, value, size_list, [*currpath, entry]) }
+    # Current path size == sum of all entries
+    size_list[currpath] = contents.sum { |entry, _| size_list[[*currpath,  entry]] }
+
+    size_list
+  end
+
   def filesystem
     input.each_with_object({ curdir: [], tree: {} }) do |cmd, state|
-      case cmd[:command]
-      when :cd
-        case cmd[:arg]
-        when '/'
-          state[:curdir] = []
-        when '..'
-          state[:curdir] = state[:curdir][0...-1]
-        else
-          state[:curdir] << cmd[:arg]
-        end
-      when :ls
-        curdir = state[:curdir].reduce(state[:tree]) do |tree, dir|
-          tree[dir] ||= {}
-        end
-        cmd[:output].each_with_object(curdir) do |file, dir|
-          case file
-          when /^dir .*$/
-            _, dirname = file.split
-            dir[dirname] ||= {}
-          else
-            size, filename = file.split
-            dir[filename] = size.to_i
-          end
-        end
+      send(:"parse_#{cmd[:command]}", cmd[:arg], cmd[:output], state)
+    end
+  end
+
+  def parse_ls(_arg, output, state)
+    currdir = state[:curdir].reduce(state[:tree]) do |tree, dir| # Initializing + traversal
+      tree[dir] ||= {}
+    end
+
+    output.each_with_object(currdir) do |entry, currdir_contents|
+      case entry
+      when /^dir .*$/
+        _, dirname = entry.split
+        currdir_contents[dirname] ||= {}
+      else
+        size, filename = entry.split
+        currdir_contents[filename] = size.to_i
       end
     end
   end
 
-  def compute_sizes(treetop, contents, size_list = {}, currpath = ROOT_PATH)
-    return size_list.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
-
-    contents.each do |entry, value|
-      compute_sizes(entry, value, size_list, [*currpath, entry])
+  def parse_cd(arg, _output, state)
+    case arg
+    when '/'
+      state[:curdir] = ROOT_PATH
+    when '..'
+      state[:curdir].pop
+    else
+      state[:curdir] << arg
     end
-    size_list[currpath] = contents.sum { |entry, _| size_list[[*currpath,  entry]] }
-    size_list
   end
 
   def convert_data(data)
