@@ -37,7 +37,7 @@ class Day7 < AdventDay
 
   private
 
-  def directories(tree, currpath = [])
+  def directories(tree, currpath = ROOT_PATH)
     dir_paths = tree.select { |entry, content| content.is_a? Hash }.to_h
     subdir_paths = dir_paths.flat_map { |path, subtree| directories(subtree, path) }
 
@@ -74,7 +74,7 @@ class Day7 < AdventDay
     end
   end
 
-  def compute_sizes(treetop, contents, size_list = {}, currpath = [])
+  def compute_sizes(treetop, contents, size_list = {}, currpath = ROOT_PATH)
     return size_list.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
 
     contents.each do |entry, value|
