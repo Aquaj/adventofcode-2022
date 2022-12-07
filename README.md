@@ -32,7 +32,7 @@ with other competitors.
 | ✔     | [Day 4: Camp Cleanup](https://adventofcode.com/2022/day/4)            | 🌟       | 🌟       | [Solution](day-04.rb)
 | ✔     | [Day 5: Supply Stacks](https://adventofcode.com/2022/day/5)           | 🌟       | 🌟       | [Solution](day-05.rb)
 | ✔     | [Day 6: Tuning Trouble](https://adventofcode.com/2022/day/6)          | 🌟       | 🌟       | [Solution](day-06.rb)
-|       | [Day 7: TBD](https://adventofcode.com/2022/day/7)                     |          |          | [Solution](day-07.rb)
+| ✔     | [Day 7: No Space Left On Device](https://adventofcode.com/2022/day/7) | 🌟       | 🌟       | [Solution](day-07.rb)
 |       | [Day 8: TBD](https://adventofcode.com/2022/day/8)                     |          |          | [Solution](day-08.rb)
 |       | [Day 9: TBD](https://adventofcode.com/2022/day/9)                     |          |          | [Solution](day-09.rb)
 |       | [Day 10: TBD](https://adventofcode.com/2022/day/10)                   |          |          | [Solution](day-10.rb)
