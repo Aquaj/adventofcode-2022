@@ -3,13 +3,20 @@ require_relative 'common'
 class Day7 < AdventDay
   EXPECTED_RESULTS = { 1 => 95437, 2 => 24933642 }
 
+  STORAGE_SIZE = 70_000_000
+  NEEDED_SPACE = 30_000_000
+
+  SMALL_FOLDER_SIZE = 100_000
+
+  ROOT_PATH = []
+
   def first_part
     tree = filesystem[:tree]
     sizes = compute_sizes('/', tree)
     dirs = [[], *directories(tree)]
     sizes.
       select { |path, _size| dirs.include?(path) }.
-      select { |_path, size| size <= 100_000 }.
+      select { |_path, size| size <= SMALL_FOLDER_SIZE }.
       sum { |_path, size| size }
   end
 
@@ -17,12 +24,14 @@ class Day7 < AdventDay
     tree = filesystem[:tree]
     sizes = compute_sizes('/', tree)
     dirs = directories(tree)
-    remaining_space = 70_000_000 - sizes[[]]
-    sizes.
+
+    remaining_space = STORAGE_SIZE - sizes[ROOT_PATH]
+
+    dir, freeable_space = sizes.
       select { |path, _size| dirs.include?(path) }.
       sort_by { |_dir, size| size }.
-      find { |dir, size| remaining_space + size >= 30_000_000 }.
-      last
+      find { |dir, freeable| remaining_space + freeable >= NEEDED_SPACE }
+    freeable_space
   end
 
   private
