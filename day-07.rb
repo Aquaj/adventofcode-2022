@@ -8,10 +8,8 @@ class Day7 < AdventDay
 
   SMALL_FOLDER_SIZE = 100_000
 
-  ROOT_PATH = []
-
   def first_part
-    tree = filesystem[:tree]
+    tree = filesystem.tree
     sizes = compute_sizes('/', tree)
     dirs = directories(tree)
 
@@ -22,7 +20,7 @@ class Day7 < AdventDay
   end
 
   def second_part
-    tree = filesystem[:tree]
+    tree = filesystem.tree
     sizes = compute_sizes('/', tree)
     dirs = directories(tree)
 
@@ -55,39 +53,53 @@ class Day7 < AdventDay
     size_list
   end
 
-  def filesystem
-    input.each_with_object({ curdir: [], tree: {} }) do |cmd, state|
-      send(:"parse_#{cmd[:command]}", cmd[:arg], cmd[:output], state)
-    end
-  end
+  class FileSystemParser
+    ROOT_PATH = []
 
-  def parse_ls(_arg, output, state)
-    currdir = state[:curdir].reduce(state[:tree]) do |tree, dir| # Initializing + traversal
-      tree[dir] ||= {}
+    attr_reader :current_path, :tree
+
+    def initialize
+      @current_path = []
+      @tree = {}
     end
 
-    output.each_with_object(currdir) do |entry, currdir_contents|
-      case entry
-      when /^dir .*$/
-        _, dirname = entry.split
-        currdir_contents[dirname] ||= {}
+    def path_contents(path)
+      path.reduce(@tree) { |tree, dir| tree[dir] ||= {} }
+    end
+
+    def parse_ls(_arg, output)
+      output.each_with_object(path_contents(@current_path)) do |entry, contents|
+        case entry
+        when /^dir .*$/
+          _, dirname = entry.split
+          contents[dirname] ||= {}
+        else
+          size, filename = entry.split
+          contents[filename] = size.to_i
+        end
+      end
+    end
+
+    def parse_cd(arg, _output)
+      case arg
+      when '/'
+        @current_path = ROOT_PATH
+      when '..'
+        @current_path.pop
       else
-        size, filename = entry.split
-        currdir_contents[filename] = size.to_i
+        @current_path << arg
       end
     end
   end
 
-  def parse_cd(arg, _output, state)
-    case arg
-    when '/'
-      state[:curdir] = ROOT_PATH
-    when '..'
-      state[:curdir].pop
-    else
-      state[:curdir] << arg
+  ROOT_PATH = FileSystemParser::ROOT_PATH
+
+  def filesystem
+    input.each_with_object(FileSystemParser.new) do |cmd, fs|
+      fs.send(:"parse_#{cmd[:command]}", cmd[:arg], cmd[:output])
     end
   end
+
 
   def convert_data(data)
     super.each_with_object([]) do |line, output|
