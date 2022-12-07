@@ -10,7 +10,7 @@ class Day7 < AdventDay
 
   def first_part
     tree = filesystem.tree
-    sizes = compute_sizes('/', tree)
+    sizes = compute_sizes(tree)
     dirs = directories(tree)
 
     sizes.
@@ -21,7 +21,7 @@ class Day7 < AdventDay
 
   def second_part
     tree = filesystem.tree
-    sizes = compute_sizes('/', tree)
+    sizes = compute_sizes(tree)
     dirs = directories(tree)
 
     remaining_space = STORAGE_SIZE - sizes[ROOT_PATH]
@@ -42,11 +42,11 @@ class Day7 < AdventDay
     [currpath, *subdir_paths.map { |path| [*currpath, *path] }]
   end
 
-  def compute_sizes(treetop, contents, size_list = {}, currpath = ROOT_PATH)
+  def compute_sizes(contents, size_list = {}, currpath = ROOT_PATH)
     return size_list.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
 
     # Compute entry sizes
-    contents.each { |entry, value| compute_sizes(entry, value, size_list, [*currpath, entry]) }
+    contents.each { |entry, value| compute_sizes(value, size_list, [*currpath, entry]) }
     # Current path size == sum of all entries
     size_list[currpath] = contents.sum { |entry, _| size_list[[*currpath,  entry]] }
 
