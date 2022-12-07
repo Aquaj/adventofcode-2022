@@ -13,7 +13,8 @@ class Day7 < AdventDay
   def first_part
     tree = filesystem[:tree]
     sizes = compute_sizes('/', tree)
-    dirs = [[], *directories(tree)]
+    dirs = directories(tree)
+
     sizes.
       select { |path, _size| dirs.include?(path) }.
       select { |_path, size| size <= SMALL_FOLDER_SIZE }.
@@ -36,9 +37,11 @@ class Day7 < AdventDay
 
   private
 
-  def directories(tree)
-    dir_only_tree = tree.select { |entry, content| content.is_a? Hash }.to_h
-    (dir_only_tree.keys.map { |k| [k] } + dir_only_tree.flat_map { |path, subtree| directories(subtree).map { |dir| [*path, dir].flatten }})
+  def directories(tree, currpath = [])
+    dir_paths = tree.select { |entry, content| content.is_a? Hash }.to_h
+    subdir_paths = dir_paths.flat_map { |path, subtree| directories(subtree, path) }
+
+    [currpath, *subdir_paths.map { |path| [*currpath, *path] }]
   end
 
   def filesystem
