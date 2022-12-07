@@ -11,10 +11,9 @@ class Day7 < AdventDay
   def first_part
     tree = filesystem.tree
     sizes = compute_sizes(tree)
-    dirs = directories(tree)
 
     sizes.
-      select { |path, _size| dirs.include?(path) }.
+      select { |path, _size| filesystem.directories.include?(path) }.
       select { |_path, size| size <= SMALL_FOLDER_SIZE }.
       sum { |_path, size| size }
   end
@@ -22,25 +21,17 @@ class Day7 < AdventDay
   def second_part
     tree = filesystem.tree
     sizes = compute_sizes(tree)
-    dirs = directories(tree)
 
     remaining_space = STORAGE_SIZE - sizes[ROOT_PATH]
 
     dir, freeable_space = sizes.
-      select { |path, _size| dirs.include?(path) }.
+      select { |path, _size| filesystem.directories.include?(path) }.
       sort_by { |_dir, size| size }.
       find { |dir, freeable| remaining_space + freeable >= NEEDED_SPACE }
     freeable_space
   end
 
   private
-
-  def directories(tree, currpath = ROOT_PATH)
-    dir_paths = tree.select { |entry, content| content.is_a? Hash }.to_h
-    subdir_paths = dir_paths.flat_map { |path, subtree| directories(subtree, path) }
-
-    [currpath, *subdir_paths.map { |path| [*currpath, *path] }]
-  end
 
   def compute_sizes(contents, size_list = {}, currpath = ROOT_PATH)
     return size_list.tap { |sizes| sizes[currpath] = contents } unless contents.is_a? Hash
@@ -54,13 +45,15 @@ class Day7 < AdventDay
   end
 
   class FileSystemParser
-    ROOT_PATH = []
+    ROOT_PATH = [].freeze
 
-    attr_reader :current_path, :tree
+    attr_reader :current_path, :tree, :directories
 
     def initialize
       @current_path = []
       @tree = {}
+
+      @directories = []
     end
 
     def path_contents(path)
@@ -73,6 +66,7 @@ class Day7 < AdventDay
         when /^dir .*$/
           _, dirname = entry.split
           contents[dirname] ||= {}
+          @directories << [*@current_path, dirname]
         else
           size, filename = entry.split
           contents[filename] = size.to_i
@@ -83,7 +77,7 @@ class Day7 < AdventDay
     def parse_cd(arg, _output)
       case arg
       when '/'
-        @current_path = ROOT_PATH
+        @current_path = ROOT_PATH.dup
       when '..'
         @current_path.pop
       else
@@ -95,7 +89,7 @@ class Day7 < AdventDay
   ROOT_PATH = FileSystemParser::ROOT_PATH
 
   def filesystem
-    input.each_with_object(FileSystemParser.new) do |cmd, fs|
+    @filesytem ||= input.each_with_object(FileSystemParser.new) do |cmd, fs|
       fs.send(:"parse_#{cmd[:command]}", cmd[:arg], cmd[:output])
     end
   end
@@ -110,7 +104,7 @@ class Day7 < AdventDay
       else
         output.last[:output] << line
       end
-    end
+    end.freeze
   end
 end
 
