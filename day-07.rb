@@ -99,8 +99,8 @@ class Day7 < AdventDay
   end
 
   def filesystem
-    @filesytem ||= input.each_with_object(FileSystemParser.new) do |cmd, fs|
-      fs.send(:"parse_#{cmd[:command]}", cmd[:arg], cmd[:output])
+    @filesytem ||= commands.each_with_object(FileSystem.new) do |cmd, fs|
+      fs.send(:"parse_#{cmd[:exe]}", cmd[:arg], cmd[:output])
     end
   end
 
@@ -110,12 +110,13 @@ class Day7 < AdventDay
       if cmd = line.match(/\$ (.*)/)&.captures&.unwrap
         exe, *arg = cmd.split
         arg = arg.any? ? arg.join(' ') : nil
-        output << { command: exe.to_sym, arg: arg,  output: [] }
+        output << { exe: exe.to_sym, arg: arg,  output: [] }
       else
         output.last[:output] << line
       end
-    end.freeze
+    end
   end
+  alias_method :commands, :input
 end
 
 Day7.solve
