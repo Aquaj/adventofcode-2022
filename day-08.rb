@@ -15,20 +15,32 @@ class Day8 < AdventDay
   end
 
   def second_part
+    up_bound     = 0
+    left_bound   = 0
+    right_bound  = tree_map.width  - 1
+    bottom_bound = tree_map.height - 1
+
     tree_map.coords.map do |(x,y)|
       current_tree = tree_map[x,y]
 
-      boundary_up = (y-1).towards(0).find.with_index { |n,i| break i if tree_map[x,n] >= current_tree } unless y == 0
-      boundary_left = (x-1).towards(0).find.with_index { |n,i| break i if tree_map[n,y] >= current_tree } unless x == 0
-      boundary_right = (x+1).towards(tree_map.width - 1).find.with_index { |n,i| break i if tree_map[n,y] >= current_tree } unless x == tree_map.width - 1
-      boundary_down = (y+1).towards(tree_map.height - 1).find.with_index { |n,i| break i if tree_map[x,n] >= current_tree } unless y == tree_map.height - 1
+      dirs = {
+        up:    (y-1).towards(up_bound),
+        left:  (x-1).towards(left_bound),
+        right: (x+1).towards(right_bound),
+        down:  (y+1).towards(bottom_bound),
+      }
 
-      boundary_up = boundary_up ? boundary_up + 1 : y
-      boundary_left = boundary_left ? boundary_left + 1 : x
-      boundary_right = boundary_right ? boundary_right + 1 : tree_map.width - 1 - x
-      boundary_down = boundary_down ? boundary_down + 1 : tree_map.height - 1 - y
+      up    = dirs[:up].find.with_index    { |n,i| break i if tree_map[x,n] >= current_tree } unless y == up_bound
+      left  = dirs[:left].find.with_index  { |n,i| break i if tree_map[n,y] >= current_tree } unless x == left_bound
+      right = dirs[:right].find.with_index { |n,i| break i if tree_map[n,y] >= current_tree } unless x == right_bound
+      down  = dirs[:down].find.with_index  { |n,i| break i if tree_map[x,n] >= current_tree } unless y == bottom_bound
 
-      boundary_up * boundary_left * boundary_right * boundary_down
+      up    = up    ? up    + 1 : (up_bound - y).abs
+      left  = left  ? left  + 1 : (left_bound - x).abs
+      right = right ? right + 1 : (right_bound - x).abs
+      down  = down  ? down  + 1 : (bottom_bound - y).abs
+
+      up * left * right * down
     end.max
   end
 
