@@ -1,7 +1,7 @@
 require_relative 'common'
 
 class Day9 < AdventDay
-  EXPECTED_RESULTS = { 1 => 13, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 88, 2 => 36 }
 
   def first_part
     positions = { tail: [0,0], head: [0,0] }
@@ -34,6 +34,38 @@ class Day9 < AdventDay
   end
 
   def second_part
+    rope = [:head, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    positions = rope.map { |knot| [knot, [0,0]] }.to_h
+
+    tail_history = Set.new.tap { |s| s << positions[rope.last] }
+    moves.each do |(direction, duration)|
+      duration.times do
+        # Move head
+        xh,yh = *positions[:head]
+        case direction
+        when 'U'
+          positions[:head] = [xh, yh+1]
+        when 'R'
+          positions[:head] = [xh+1, yh]
+        when 'L'
+          positions[:head] = [xh-1, yh]
+        when 'D'
+          positions[:head] = [xh, yh-1]
+        end
+
+        rope.each_cons(2) do |previous, knot|
+          prev_pos = positions[previous]
+          knot_pos = positions[knot]
+          if !adjacent?(prev_pos, knot_pos)
+            new_coords = move_towards(knot_pos, prev_pos)
+            positions[knot] = new_coords
+          end
+        end
+
+        tail_history << positions[rope.last].dup
+      end
+    end
+    tail_history.size
   end
 
   private
