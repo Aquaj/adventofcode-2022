@@ -1,7 +1,7 @@
 require_relative 'common'
 
 class Day9 < AdventDay
-  EXPECTED_RESULTS = { 1 => 88, 2 => 36 }
+  EXPECTED_RESULTS = { 1 => 13, 2 => 36 }
 
   def first_part
     positions = { tail: [0,0], head: [0,0] }
@@ -106,6 +106,11 @@ class Day9 < AdventDay
     end
   end
   alias_method :moves, :input
+
+  def debug_input
+    path = "#{input_fetcher.debug_file_path}-#{part}"
+    File.read(path)
+  end
 end
 
 Day9.solve
