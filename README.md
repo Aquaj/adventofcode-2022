@@ -34,7 +34,7 @@ with other competitors.
 | ✔     | [Day 6: Tuning Trouble](https://adventofcode.com/2022/day/6)          | 🌟       | 🌟       | [Solution](day-06.rb)
 | ✔     | [Day 7: No Space Left On Device](https://adventofcode.com/2022/day/7) | 🌟       | 🌟       | [Solution](day-07.rb)
 | ✔     | [Day 8: Treetop Tree House](https://adventofcode.com/2022/day/8)      | 🌟       | 🌟       | [Solution](day-08.rb)
-|       | [Day 9: TBD](https://adventofcode.com/2022/day/9)                     |          |          | [Solution](day-09.rb)
+| ✔     | [Day 9: Rope Bridge](https://adventofcode.com/2022/day/9)             | 🌟       | 🌟       | [Solution](day-09.rb)
 |       | [Day 10: TBD](https://adventofcode.com/2022/day/10)                   |          |          | [Solution](day-10.rb)
 |       | [Day 11: TBD](https://adventofcode.com/2022/day/11)                   |          |          | [Solution](day-11.rb)
 |       | [Day 12: TBD](https://adventofcode.com/2022/day/12)                   |          |          | [Solution](day-12.rb)
