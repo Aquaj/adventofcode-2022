@@ -8,26 +8,16 @@ class Day9 < AdventDay
     tail_history = Set.new.tap { |s| s << positions[:tail] }
     moves.each do |(direction, duration)|
       duration.times do
-        xh,yh = *positions[:head]
-        xt,yt = *positions[:tail]
-
         # Move head
-        case direction
-        when 'U'
-          positions[:head] = [xh, yh+1]
-        when 'R'
-          positions[:head] = [xh+1, yh]
-        when 'L'
-          positions[:head] = [xh-1, yh]
-        when 'D'
-          positions[:head] = [xh, yh-1]
-        end
+        positions[:head] = move_in(direction, positions[:head])
 
+        # Move tail
         if !adjacent?(positions[:head], positions[:tail])
           new_coords = move_towards(positions[:tail], positions[:head])
           positions[:tail] = new_coords
-          tail_history << positions[:tail].dup
         end
+
+        tail_history << positions[:tail].dup
       end
     end
     tail_history.size
@@ -38,24 +28,17 @@ class Day9 < AdventDay
     positions = rope.map { |knot| [knot, [0,0]] }.to_h
 
     tail_history = Set.new.tap { |s| s << positions[rope.last] }
+
     moves.each do |(direction, duration)|
       duration.times do
         # Move head
-        xh,yh = *positions[:head]
-        case direction
-        when 'U'
-          positions[:head] = [xh, yh+1]
-        when 'R'
-          positions[:head] = [xh+1, yh]
-        when 'L'
-          positions[:head] = [xh-1, yh]
-        when 'D'
-          positions[:head] = [xh, yh-1]
-        end
+        positions[:head] = move_in(direction, positions[:head])
 
+        # Move tail
         rope.each_cons(2) do |previous, knot|
           prev_pos = positions[previous]
           knot_pos = positions[knot]
+
           if !adjacent?(prev_pos, knot_pos)
             new_coords = move_towards(knot_pos, prev_pos)
             positions[knot] = new_coords
@@ -80,23 +63,23 @@ class Day9 < AdventDay
     x1,y1 = curr
     x2,y2 = dest
 
-    if x2 > x1
-      new_x1 = x1 + 1
-    elsif x2 < x1
-      new_x1 = x1 - 1
-    else
-      new_x1 = x1
-    end
-
-    if y2 > y1
-      new_y1 = y1 + 1
-    elsif y2 < y1
-      new_y1 = y1 - 1
-    else
-      new_y1 = y1
-    end
+    direction = x2 <=> x1
+    new_x1 = x1 + direction
+    direction = y2 <=> y1
+    new_y1 = y1 + direction
 
     [new_x1, new_y1]
+  end
+
+  def move_in(direction, orig_pos)
+    x,y = *orig_pos
+
+    case direction
+    when 'U' then [x, y+1]
+    when 'R' then [x+1, y]
+    when 'L' then [x-1, y]
+    when 'D' then [x, y-1]
+    end
   end
 
   def convert_data(data)
