@@ -10,8 +10,8 @@ class AdventDay
     def solve
       run_tests if test?
       results = {}
-      puts " - #{(Benchmark.measure { print "#1. #{(results[1] = self.new.first_part).inspect.bold}"  }.real * 1000).round(3)}ms"
-      puts " - #{(Benchmark.measure { print "#2. #{(results[2] = self.new.second_part).inspect.bold}" }.real * 1000).round(3)}ms"
+      puts " - #{(Benchmark.measure { print "#1. #{(results[1] = self.new.run(1)).inspect.bold}" }.real * 1000).round(3)}ms"
+      puts " - #{(Benchmark.measure { print "#2. #{(results[2] = self.new.run(2)).inspect.bold}" }.real * 1000).round(3)}ms"
       Clipboard.copy(results[copy_to]) if copy?
     end
 
@@ -37,6 +37,15 @@ class AdventDay
     end
   end
 
+  attr_reader :part
+  def run(part)
+    @part = part
+    case part
+    when 1 then first_part
+    when 2 then second_part
+    end
+  end
+
   def first_part; end
   def second_part; end
 
@@ -46,19 +55,23 @@ class AdventDay
 
   def input
     return @input if defined?(@input)
-    # Using hook methods instead of calling InputFetcher directly
+    # Using hooks instead of calling InputFetcher directly to allow override
     input_data = debug? ? debug_input : source_input
     @input ||= convert_data(input_data)
   end
 
+  def input_fetcher
+    InputFetcher.new(day_number, YEAR, debug: debug?)
+  end
+
   # HOOK for subclass override
   def source_input
-    InputFetcher.new(day_number, YEAR, debug: false).get
+    input_fetcher.get
   end
 
   # HOOK for subclass override
   def debug_input
-    InputFetcher.new(day_number, YEAR, debug: true).get
+    input_fetcher.get
   end
 
   def display(value)
