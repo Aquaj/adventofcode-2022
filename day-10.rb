@@ -1,18 +1,26 @@
 require_relative 'common'
 
 class Day10 < AdventDay
-  EXPECTED_RESULTS = { 1 => 13140, 2 => nil }
-
+  EXPECTED_RESULTS = { 1 => 13140, 2 => <<~OUTPUT.strip }
+  ##..##..##..##..##..##..##..##..##..##..
+  ###...###...###...###...###...###...###.
+  ####....####....####....####....####....
+  #####.....#####.....#####.....#####.....
+  ######......######......######......####
+  #######.......#######.......#######.....
+  OUTPUT
 
   class CPU
-    SIGNAL_TICKS = (0...6).map { |n| 20 + 40 * n }
+    SCREEN_WIDTH = 40
+    SIGNAL_TICKS = (0...6).map { |n| 20 + SCREEN_WIDTH * n }
 
-    attr_reader :signals
+    attr_reader :signals, :output
 
     def initialize
       @registers = { X: 1 }
-      @clock = 1
+      @clock = 0
       @signals = SIGNAL_TICKS.map { |tick| [tick, nil] }.to_h
+      @output = ""
     end
 
     def run(instructions)
@@ -28,9 +36,21 @@ class Day10 < AdventDay
     end
 
     def tick!
+      draw_pixel!
       @clock += 1
-      yield if block_given?
       @signals[@clock] = @clock * @registers[:X] if @signals.key?(@clock)
+      yield if block_given?
+    end
+
+    SCREEN = { on: '#', off: '.' }
+    def draw_pixel!
+      sprite_pos = @registers[:X]
+      sprite_coords = [-1, 0, 1].map { |d| sprite_pos + d }
+      @output << (sprite_coords.include?(@clock % SCREEN_WIDTH) ? SCREEN[:on] : SCREEN[:off])
+    end
+
+    def render
+      @output.chars.each_slice(SCREEN_WIDTH).map(&:join)
     end
   end
 
@@ -41,6 +61,9 @@ class Day10 < AdventDay
   end
 
   def second_part
+    cpu = CPU.new
+    cpu.run(instructions)
+    cpu.render.tap { |screen| display screen }.join("\n")
   end
 
   private
