@@ -3,21 +3,8 @@ require_relative 'common'
 class Day11 < AdventDay
   EXPECTED_RESULTS = { 1 => 10605, 2 => nil }
 
-  INSPECTION_ROUNDS = 20
   def first_part
-    final_monkeys = INSPECTION_ROUNDS.times.each_with_object(monkeys.dup) do |_, monkeys|
-      monkeys.each do |_index, monkey|
-        monkey[:items].each do |worry_level|
-          worry_level = monkey[:operation].call worry_level
-          worry_level /= 3
-          test = monkey[:throw][:condition].call worry_level
-          target = monkeys[monkey[:throw][test]]
-          target[:items] << worry_level
-          monkey[:inspections] += 1
-        end
-        monkey[:items] = []
-      end
-    end
+    final_monkeys = rounds.times.reduce(monkeys) { |monkeys, _| play_round(monkeys) }
     final_monkeys.values.map { |monkey| monkey[:inspections] }.sort.last(2).reduce(&:*)
   end
 
@@ -25,6 +12,26 @@ class Day11 < AdventDay
   end
 
   private
+
+  def rounds
+    @part == 1 ? 20 : 10000
+  end
+
+  def play_round(monkeys)
+    monkeys = monkeys.dup
+    monkeys.each do |_index, monkey|
+      monkey[:items].each do |worry_level|
+        worry_level = monkey[:operation].call worry_level
+        worry_level /= 3
+        test = monkey[:throw][:condition].call worry_level
+        target = monkeys[monkey[:throw][test]]
+        target[:items] << worry_level
+        monkey[:inspections] += 1
+      end
+      monkey[:items] = []
+    end
+    monkeys
+  end
 
   def convert_data(data)
     monkeys = data.split("\n\n")
