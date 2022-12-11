@@ -79,7 +79,7 @@ class Day11 < AdventDay
     line.match(/If false: throw to monkey (\d+)/).captures.first.to_i
 
   def lambda_for_operation(operation) =
-    -> (old) { eval(operation) }
+    eval("-> (old) { #{operation} }")
 end
 
 Day11.solve
