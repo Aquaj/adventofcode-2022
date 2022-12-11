@@ -36,7 +36,7 @@ with other competitors.
 | ✔     | [Day 8: Treetop Tree House](https://adventofcode.com/2022/day/8)      | 🌟       | 🌟       | [Solution](day-08.rb)
 | ✔     | [Day 9: Rope Bridge](https://adventofcode.com/2022/day/9)             | 🌟       | 🌟       | [Solution](day-09.rb)
 | ✔     | [Day 10: Cathode-Ray Tube](https://adventofcode.com/2022/day/10)      | 🌟       | 🌟       | [Solution](day-10.rb)
-|       | [Day 11: TBD](https://adventofcode.com/2022/day/11)                   |          |          | [Solution](day-11.rb)
+| ✔     | [Day 11: Monkey in the Middle](https://adventofcode.com/2022/day/11)  | 🌟       | 🌟       | [Solution](day-11.rb)
 |       | [Day 12: TBD](https://adventofcode.com/2022/day/12)                   |          |          | [Solution](day-12.rb)
 |       | [Day 13: TBD](https://adventofcode.com/2022/day/13)                   |          |          | [Solution](day-13.rb)
 |       | [Day 14: TBD](https://adventofcode.com/2022/day/14)                   |          |          | [Solution](day-14.rb)
