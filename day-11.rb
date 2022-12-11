@@ -1,14 +1,16 @@
 require_relative 'common'
 
 class Day11 < AdventDay
-  EXPECTED_RESULTS = { 1 => 10605, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 10605, 2 => 2713310158 }
 
   def first_part
-    final_monkeys = rounds.times.reduce(monkeys) { |monkeys, _| play_round(monkeys) }
+    final_monkeys = rounds.times.reduce(monkeys.dup) { |monkeys, _| play_round(monkeys) }
     final_monkeys.values.map { |monkey| monkey[:inspections] }.sort.last(2).reduce(&:*)
   end
 
   def second_part
+    final_monkeys = rounds.times.reduce(monkeys.dup) { |monkeys, _| play_round(monkeys) }
+    final_monkeys.values.map { |monkey| monkey[:inspections] }.sort.last(2).reduce(&:*)
   end
 
   private
@@ -18,12 +20,15 @@ class Day11 < AdventDay
   end
 
   def play_round(monkeys)
-    monkeys = monkeys.dup
     monkeys.each do |_index, monkey|
       monkey[:items].each do |worry_level|
         worry_level = monkey[:operation].call worry_level
-        worry_level /= 3
-        test = monkey[:throw][:condition].call worry_level
+        case @part
+        when 1 then worry_level /= 3
+        when 2 then worry_level %= all_tests
+        end
+
+        test = worry_level % monkey[:throw][:test] == 0
         target = monkeys[monkey[:throw][test]]
         target[:items] << worry_level
         monkey[:inspections] += 1
@@ -31,6 +36,10 @@ class Day11 < AdventDay
       monkey[:items] = []
     end
     monkeys
+  end
+
+  def all_tests
+    @reductor ||= monkeys.map { |_,m| m[:throw][:test] }.reduce(&:*)
   end
 
   def convert_data(data)
@@ -49,7 +58,7 @@ class Day11 < AdventDay
       items: parse_items(start),
       operation: parse_operation(op),
       throw: {
-        condition: parse_condition(test),
+        test: parse_test(test),
         true => parse_destination_true(if_true),
         false => parse_destination_false(if_false),
       }
@@ -62,8 +71,8 @@ class Day11 < AdventDay
     line.match(/Starting items:((?: (?:\d+),?)*)/).captures.first.split(',').map(&:strip).map(&:to_i)
   def parse_operation(line) =
     lambda_for_operation line.match(/Operation: new = (((old|[-\*+]|\d+|) ?)+)$/).captures.first
-  def parse_condition(line) =
-    lambda_for_condition line.match(/Test: (.+)$/).captures.first
+  def parse_test(line) =
+    line.match(/Test: divisible by (\d+)$/).captures.first.to_i
   def parse_destination_true(line) =
     line.match(/If true: throw to monkey (\d+)/).captures.first.to_i
   def parse_destination_false(line) =
@@ -71,12 +80,6 @@ class Day11 < AdventDay
 
   def lambda_for_operation(operation) =
     -> (old) { eval(operation) }
-  def lambda_for_condition(condition) =
-    case condition
-    when /divisible by (\d+)/
-      divide_by = $LAST_MATCH_INFO.captures.first.to_i
-      -> (value) { value % divide_by == 0 }
-    end
 end
 
 Day11.solve
