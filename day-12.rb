@@ -12,6 +12,21 @@ class Day12 < AdventDay
     START_NODE = 'S'
     END_NODE = 'E'
 
+    attr_reader :start, :finish
+
+    def initialize(grid)
+      super
+
+      @start = nil
+      @finish = nil
+
+      Grid.new(grid).bfs_traverse([0,0]) do |value, coords|
+        break if @start && @end
+        @start = coords if value == START_NODE
+        @finish = coords if value == END_NODE
+      end
+    end
+
     def diagonals? = false
 
     def altitude_of(node)
@@ -40,9 +55,8 @@ class Day12 < AdventDay
   end
 
   def first_part
-    mountain, start, finish = readout
-    distance = dijkstra(start, mountain, finish)[:distances]
-    distance[finish]
+    distance = dijkstra(mountain.start, mountain, mountain.finish)[:distances]
+    distance[end_goal]
   end
 
   def second_part
@@ -50,13 +64,14 @@ class Day12 < AdventDay
 
   private
 
+  def mountain
+    @mountain ||= Mountain.new(readout)
+  end
+
   def convert_data(data)
-    grid = super.map do |line|
+    super.map do |line|
       line.chars
     end
-    start_coords = grid.find.with_index { |row, y| x = row.index(Mountain::START_NODE); break [x,y] if x }
-    end_coords = grid.find.with_index { |row, y| x = row.index(Mountain::END_NODE); break [x,y] if x }
-    [Mountain.new(grid), start_coords, end_coords]
   end
   alias_method :readout, :input
 end
