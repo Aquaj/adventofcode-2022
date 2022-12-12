@@ -19,43 +19,41 @@ class Day12 < AdventDay
       @finish = nil
       @trail_starts = []
 
-      Grid.new(grid).bfs_traverse([0,0]) do |value, coords|
-        break if @start && @end
+      @terrain = Grid.new(grid)
+
+      @terrain.dfs_traverse do |value, coords|
         @start = coords if value == START_NODE
         @finish = coords if value == END_NODE
-        @trail_starts << coords if trail_start?(coords)
+
+        @trail_starts << coords if ALTITUDES[value] == ALTITUDES[START_NODE]
       end
     end
 
-    ALTITUDES = ('a'..'z').
-      map.with_index { |c,i| [c, i] }.to_h.
+    ALTITUDES = ('a'..'z').zip(0..).to_h.
       merge(START_NODE => 0, END_NODE => 25)
 
     def altitude_of(node)
       ALTITUDES[self[*node]]
     end
 
-    def trail_start?(node)
-      ALTITUDES[self[*node]] == ALTITUDES[START_NODE]
+    def coord_neighbors(node)
+      @terrain.neighbors_of(*node)
     end
+
+    def edge_cost(*)= 1
 
     def edges
       @edges ||= coords.flat_map do |s|
-        coord_neighbors(*s).filter_map do |t|
+        coord_neighbors(s).filter_map do |t|
           next unless altitude_of(t) <= altitude_of(s) + 1
           [s, t]
         end
       end
     end
-    alias_method :coord_neighbors, :neighbors_of
 
     def neighbors(node)
       @neighbors ||= edges.group_by(&:first).transform_values { |s_edges| s_edges.map(&:last) }
       @neighbors[node]
-    end
-
-    def edge_cost(*)
-      1
     end
   end
 
@@ -73,10 +71,11 @@ class Day12 < AdventDay
   end
 
   def second_part
+    # Easier to go down than up !
     mountain = ReverseMountain.new(readout)
 
     distances = Algorithms.dijkstra(mountain.finish, mountain)[:distances]
-    mountain.trail_starts.map { |beginning| distances[beginning] }.min
+    mountain.trail_starts.map { |trail_start| distances[trail_start] }.min
   end
 
   private
