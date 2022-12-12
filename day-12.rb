@@ -2,8 +2,6 @@ require_relative 'common'
 require_relative 'support/algorithms'
 
 class Day12 < AdventDay
-  include Algorithms
-
   EXPECTED_RESULTS = { 1 => 31, 2 => 29 }
 
   class Mountain < Grid
@@ -70,14 +68,14 @@ class Day12 < AdventDay
   def first_part
     mountain = Mountain.new(readout)
 
-    distances = dijkstra(mountain.start, mountain, mountain.finish)[:distances]
+    distances = Algorithms.dijkstra(mountain.start, mountain, mountain.finish)[:distances]
     distances[mountain.finish]
   end
 
   def second_part
     mountain = ReverseMountain.new(readout)
 
-    distances = dijkstra(mountain.finish, mountain)[:distances]
+    distances = Algorithms.dijkstra(mountain.finish, mountain)[:distances]
     mountain.trail_starts.map { |beginning| distances[beginning] }.min
   end
 
