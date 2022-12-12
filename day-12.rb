@@ -4,7 +4,7 @@ require_relative 'support/algorithms'
 class Day12 < AdventDay
   include Algorithms
 
-  EXPECTED_RESULTS = { 1 => 31, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 31, 2 => 29 }
 
   class Mountain < Grid
     include Grid::GraphMethods
@@ -12,27 +12,35 @@ class Day12 < AdventDay
     START_NODE = 'S'
     END_NODE = 'E'
 
-    attr_reader :start, :finish
+    attr_reader :start, :finish, :trail_starts
 
     def initialize(grid)
       super
 
       @start = nil
       @finish = nil
+      @trail_starts = []
 
       Grid.new(grid).bfs_traverse([0,0]) do |value, coords|
         break if @start && @end
         @start = coords if value == START_NODE
         @finish = coords if value == END_NODE
+        @trail_starts << coords if trail_start?(coords)
       end
     end
 
     def diagonals? = false
 
+    ALTITUDES = ('a'..'z').
+      map.with_index { |c,i| [c, i] }.to_h.
+      merge(START_NODE => 0, END_NODE => 25)
+
     def altitude_of(node)
-      return 0 if self[*node] == START_NODE
-      return 25 if self[*node] == END_NODE
-      ('a'..'z').to_a.index(self[*node])
+      ALTITUDES[self[*node]]
+    end
+
+    def trail_start?(node)
+      ALTITUDES[self[*node]] == ALTITUDES[START_NODE]
     end
 
     def edges
@@ -54,19 +62,27 @@ class Day12 < AdventDay
     end
   end
 
+  class ReverseMountain < Mountain
+    def altitude_of(node)
+      ALTITUDES[END_NODE] - super(node)
+    end
+  end
+
   def first_part
-    distance = dijkstra(mountain.start, mountain, mountain.finish)[:distances]
-    distance[end_goal]
+    mountain = Mountain.new(readout)
+
+    distances = dijkstra(mountain.start, mountain, mountain.finish)[:distances]
+    distances[mountain.finish]
   end
 
   def second_part
+    mountain = ReverseMountain.new(readout)
+
+    distances = dijkstra(mountain.finish, mountain)[:distances]
+    mountain.trail_starts.map { |beginning| distances[beginning] }.min
   end
 
   private
-
-  def mountain
-    @mountain ||= Mountain.new(readout)
-  end
 
   def convert_data(data)
     super.map do |line|
