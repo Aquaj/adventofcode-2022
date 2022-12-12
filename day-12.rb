@@ -52,7 +52,8 @@ class Day12 < AdventDay
     alias_method :coord_neighbors, :neighbors_of
 
     def neighbors(node)
-      edges.select { |(s,_t)| s == node }.map(&:last)
+      @neighbors ||= edges.group_by(&:first).transform_values { |s_edges| s_edges.map(&:last) }
+      @neighbors[node]
     end
 
     def edge_cost(*)
