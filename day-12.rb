@@ -29,8 +29,6 @@ class Day12 < AdventDay
       end
     end
 
-    def diagonals? = false
-
     ALTITUDES = ('a'..'z').
       map.with_index { |c,i| [c, i] }.to_h.
       merge(START_NODE => 0, END_NODE => 25)
@@ -57,7 +55,7 @@ class Day12 < AdventDay
       edges.select { |(s,_t)| s == node }.map(&:last)
     end
 
-    def edge_cost(...)
+    def edge_cost(*)
       1
     end
   end
