@@ -4,13 +4,15 @@ class Day13 < AdventDay
   EXPECTED_RESULTS = { 1 => 13, 2 => 140 }
 
   def first_part
-    packets.filter_map.with_index do |pair, index|
-      is_valid = compare(*pair.deep_copy)
-      index + 1 if is_valid
+    packet_pairs.filter_map.with_index do |pair, index|
+      index + 1 if compare(*pair.deep_copy)
     end.sum
   end
 
+  DIVIDER_PACKETS = [ [[2]], [[6]] ]
   def second_part
+    sorted = (packets + DIVIDER_PACKETS).sort { |*pair| compare(*pair.deep_copy) ? -1 : 1 }
+    DIVIDER_PACKETS.map { |packet| sorted.index(packet) + 1 }.reduce(&:*)
   end
 
   private
@@ -55,7 +57,11 @@ class Day13 < AdventDay
       end
     end
   end
-  alias_method :packets, :input
+  alias_method :packet_pairs, :input
+
+  def packets
+    packet_pairs.flatten(1)
+  end
 end
 
 Day13.solve
