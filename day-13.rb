@@ -21,41 +21,36 @@ class Day13 < AdventDay
     value_1, *remainder_1 = packet_1
     value_2, *remainder_2 = packet_2
 
-    pair = [value_1, value_2]
-    case
+    case [value_1, value_2]
     # both nums
-    when match(pair, [Numeric, Numeric])
+    in [Numeric, Numeric]
       return true if value_1 < value_2
       return false if value_1 > value_2
       return compare(remainder_1, remainder_2)
 
     # both lists
-    when match(pair, [Array, Array])
+    in [Array, Array]
       is_valid = compare(value_1, value_2)
       return compare(remainder_1, remainder_2) if is_valid.nil?
       return is_valid
 
     # 1 is num, 1 is list
-    when match(pair, [Numeric, Array])
+    in [Numeric, Array]
       compare([Array(value_1), *remainder_1], packet_2)
-    when match(pair, [Array, Numeric])
+    in [Array, Numeric]
       compare(packet_1, [Array(value_2), *remainder_2])
 
     # End of packet checks
-    when pair.all?(&:nil?)
+    in [nil, nil]
       return nil
-    when value_1.nil?
+    in [nil, _]
       return true
-    when value_2.nil?
+    in [_, nil]
       return false
 
     else
       raise "Strange packet state uncovered"
     end
-  end
-
-  def match(pair, classes)
-    pair.zip(classes).all? { |obj, klass| obj.is_a? klass }
   end
 
   def convert_data(data)
