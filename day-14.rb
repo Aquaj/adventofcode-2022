@@ -1,12 +1,12 @@
 require_relative 'common'
 
 class Day14 < AdventDay
-  EXPECTED_RESULTS = { 1 => 24, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 24, 2 => 93 }
 
   SAND_SOURCE = [500, 0]
 
   def first_part
-    occupied_spaces = rock_coords.dup
+    occupied_spaces = rock_coords.deep_copy
 
     (1..).find do |sand_unit|
       resting_place = fall_from(SAND_SOURCE, obstacles: occupied_spaces)
@@ -27,7 +27,7 @@ class Day14 < AdventDay
 
     block_x, block_y = *first_obstacle
     next_blocks = [ [block_x - 1, block_y], [block_x + 1, block_y] ]
-    free_space = next_blocks.find { |block| !obstacles[block] }
+    free_space = next_blocks.find { |block| !obstacles.include?(block) }
     return [block_x, block_y - 1] unless free_space
 
     fall_from(free_space, obstacles: obstacles)
@@ -35,26 +35,24 @@ class Day14 < AdventDay
 
   class Obstacles
     def initialize
-      @blocks = Set.new
-      @floor_y = nil
+      @blocks = {}
     end
 
-    def finalize!
-      lowest_block = @blocks.map(&:last).max
-      @floor_y = lowest_block + 2
+    def <<(coords)
+      x,y = coords
+      @blocks[x] ||= Set.new
+      @blocks[x] << y
     end
 
-    def <<(val)
-      @blocks << val
-    end
-
-    def [](val)
-      return val if @blocks.include? val
+    def include?(coords)
+      x,y = *coords
+      return true if @blocks[x]&.include? y
     end
 
     def under(coords)
-      first_under = @blocks.select { |(x,y)| x == coords[0] && y > coords[1] }.min_by { |(_,y)| y }
-      first_under || ([coords[0], @floor_y] if @floor_y)
+      source_x, source_y = coords
+      y_under = @blocks[source_x]&.select { |y| y > source_y }&.min
+      [source_x, y_under] if y_under
     end
   end
 
@@ -66,7 +64,7 @@ class Day14 < AdventDay
         x1.towards(x2).each { |x| spaces << [x,y1] } # y1 == y2
         y1.towards(y2).each { |y| spaces << [x1,y] } # x1 == x2
       end
-    end.tap { |o| o.finalize! if @part == 2 }
+    end
   end
 
   def convert_data(data)
