@@ -39,7 +39,7 @@ with other competitors.
 | ✔     | [Day 11: Monkey in the Middle](https://adventofcode.com/2022/day/11)    | 🌟       | 🌟       | [Solution](day-11.rb)
 | ✔     | [Day 12: Hill Climbing Algorithm](https://adventofcode.com/2022/day/12) | 🌟       | 🌟       | [Solution](day-12.rb)
 | ✔     | [Day 13: Distress Signal](https://adventofcode.com/2022/day/13)         | 🌟       | 🌟       | [Solution](day-13.rb)
-|       | [Day 14: TBD](https://adventofcode.com/2022/day/14)                     |          |          | [Solution](day-14.rb)
+| ✔     | [Day 14: Regolith Reservoir](https://adventofcode.com/2022/day/14)      | 🌟       | 🌟       | [Solution](day-14.rb)
 |       | [Day 15: TBD](https://adventofcode.com/2022/day/15)                     |          |          | [Solution](day-15.rb)
 |       | [Day 16: TBD](https://adventofcode.com/2022/day/16)                     |          |          | [Solution](day-16.rb)
 |       | [Day 17: TBD](https://adventofcode.com/2022/day/17)                     |          |          | [Solution](day-17.rb)
