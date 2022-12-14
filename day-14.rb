@@ -36,6 +36,12 @@ class Day14 < AdventDay
   class Obstacles
     def initialize
       @blocks = Set.new
+      @floor_y = nil
+    end
+
+    def finalize!
+      lowest_block = @blocks.map(&:last).max
+      @floor_y = lowest_block + 2
     end
 
     def <<(val)
@@ -47,7 +53,8 @@ class Day14 < AdventDay
     end
 
     def under(coords)
-      @blocks.select { |(x,y)| x == coords[0] && y > coords[1] }.min_by { |(_,y)| y }
+      first_under = @blocks.select { |(x,y)| x == coords[0] && y > coords[1] }.min_by { |(_,y)| y }
+      first_under || ([coords[0], @floor_y] if @floor_y)
     end
   end
 
@@ -59,7 +66,7 @@ class Day14 < AdventDay
         x1.towards(x2).each { |x| spaces << [x,y1] } # y1 == y2
         y1.towards(y2).each { |y| spaces << [x1,y] } # x1 == x2
       end
-    end
+    end.tap { |o| o.finalize! if @part == 2 }
   end
 
   def convert_data(data)
