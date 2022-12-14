@@ -20,7 +20,7 @@ class Day14 < AdventDay
 
   private
 
-  FREE_FALL = Object.new.freeze
+  FREE_FALL = Object.new.tap { def _1.inspect = 'FREE FALL' }.freeze
   def fall_from(coords, obstacles:)
     first_obstacle = obstacles.under(coords)
     return FREE_FALL unless first_obstacle
