@@ -53,8 +53,9 @@ class Day14 < AdventDay
 
     def <<(coords)
       x,y = coords
-      @blocks[x] ||= Set.new
+      @blocks[x] ||= []
       @blocks[x] << y
+      @blocks[x].sort!
     end
 
     def include?(coords)
@@ -65,7 +66,7 @@ class Day14 < AdventDay
 
     def under(coords)
       source_x, source_y = coords
-      y_under = @blocks[source_x]&.select { |y| y > source_y }&.min
+      y_under = @blocks[source_x]&.find { |y| y > source_y } # #find is acceptable bc array is always sorted
       first_under = [source_x, y_under] if y_under
       first_under || ([coords[0], @floor_y] if @floor_y)
     end
