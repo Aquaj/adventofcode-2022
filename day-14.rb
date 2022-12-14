@@ -6,21 +6,21 @@ class Day14 < AdventDay
   SAND_SOURCE = [500, 0]
 
   def first_part
-    occupied_spaces = rock_coords.deep_copy
+    occupied_spaces = rock_coords
 
     (1..).find do |sand_unit|
       resting_place = fall_from(SAND_SOURCE, obstacles: occupied_spaces)
-      occupied_spaces << resting_place
+      occupied_spaces.add resting_place
       resting_place == FREE_FALL
     end - 1
   end
 
   def second_part
-    occupied_spaces = rock_coords.deep_copy
+    occupied_spaces = rock_coords.tap(&:finalize!)
 
     (1..).find do |sand_unit|
       resting_place = fall_from(SAND_SOURCE, obstacles: occupied_spaces)
-      occupied_spaces << resting_place
+      occupied_spaces.add resting_place
       resting_place == SAND_SOURCE
     end
   end
@@ -42,45 +42,49 @@ class Day14 < AdventDay
 
   class Obstacles
     def initialize
-      @blocks = {}
+      @blocks = Hash.new { |h, k| h[k] = Set.new([@floor_y].compact) }
       @floor_y = nil
+
+      @cache = Hash.new { |h,k| h[k] = {} }
     end
 
     def finalize!
       lowest_block = @blocks.values.reduce(&:|).max
       @floor_y = lowest_block + 2
+      @blocks.each { |x,ys| ys << @floor_y }
     end
 
-    def <<(coords)
+    def add(coords)
       x,y = coords
-      @blocks[x] ||= []
       @blocks[x] << y
-      @blocks[x].sort!
+      @cache[x].transform_values! { |v| y < v ? y : v }
     end
 
     def include?(coords)
-      x,y = *coords
-      return true if @blocks[x]&.include? y
-      return true if @floor_y && (y >= @floor_y)
+      @blocks[coords[0]].include? coords[1]
     end
 
     def under(coords)
       source_x, source_y = coords
-      y_under = @blocks[source_x]&.find { |y| y > source_y } # #find is acceptable bc array is always sorted
-      first_under = [source_x, y_under] if y_under
-      first_under || ([coords[0], @floor_y] if @floor_y)
+
+      y_under = @cache[source_x].fetch(source_y) do
+        first_under = @blocks[source_x].sort.find { |y| y > source_y } || @floor_y
+        (source_y..first_under).each { |y| @cache[source_x][y] = first_under } if first_under
+        first_under
+      end
+      [source_x, y_under] if y_under
     end
   end
 
   def rock_coords
-    @rocks ||= rock_paths.each_with_object(Obstacles.new) do |coords, spaces|
+    rock_paths.each_with_object(Obstacles.new) do |coords, spaces|
       coords.each_cons(2) do |(x1,y1),(x2,y2)|
         # Only one of the two is necessary each time but logic wise
         # it's simpler to run both and it doesn't do any harm
-        x1.towards(x2).each { |x| spaces << [x,y1] } # y1 == y2
-        y1.towards(y2).each { |y| spaces << [x1,y] } # x1 == x2
+        x1.towards(x2).each { |x| spaces.add [x,y1] } # y1 == y2
+        y1.towards(y2).each { |y| spaces.add [x1,y] } # x1 == x2
       end
-    end.tap { |o| o.finalize! if @part == 2 }
+    end
   end
 
   def convert_data(data)
