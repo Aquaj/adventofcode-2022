@@ -6,10 +6,9 @@ class Day14 < AdventDay
   SAND_SOURCE = [500, 0]
 
   def first_part
-    occupied_spaces = Set.new + rock_coords
+    occupied_spaces = rock_coords.dup
 
     (1..).find do |sand_unit|
-      byebug
       resting_place = fall_from(SAND_SOURCE, obstacles: occupied_spaces)
       occupied_spaces << resting_place
       resting_place == FREE_FALL
@@ -23,7 +22,7 @@ class Day14 < AdventDay
 
   FREE_FALL = Object.new.freeze
   def fall_from(coords, obstacles:)
-    first_obstacle = obstacles.select { |(x,y)| x == coords[0] && y > coords[1] }.min_by { |(_,y)| y }
+    first_obstacle = obstacles.under(coords)
     return FREE_FALL unless first_obstacle
 
     block_x, block_y = *first_obstacle
@@ -34,14 +33,26 @@ class Day14 < AdventDay
     fall_from(free_space, obstacles: obstacles)
   end
 
-  class ::Set
+  class Obstacles
+    def initialize
+      @blocks = Set.new
+    end
+
+    def <<(val)
+      @blocks << val
+    end
+
     def [](val)
-      return val if self.include? val
+      return val if @blocks.include? val
+    end
+
+    def under(coords)
+      @blocks.select { |(x,y)| x == coords[0] && y > coords[1] }.min_by { |(_,y)| y }
     end
   end
 
   def rock_coords
-    @rocks ||= rock_paths.each_with_object(Set.new) do |coords, spaces|
+    @rocks ||= rock_paths.each_with_object(Obstacles.new) do |coords, spaces|
       coords.each_cons(2) do |(x1,y1),(x2,y2)|
         # Only one of the two is necessary each time but logic wise
         # it's simpler to run both and it doesn't do any harm
