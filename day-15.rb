@@ -1,7 +1,39 @@
 require_relative 'common'
+require 'z3'
+
+# Necessary patch to make `Z3::Tactic`s work
+module Z3
+  def self.Tactic(name)
+    Z3::Tactic.new Z3::LowLevel.mk_tactic(name)
+  end
+
+  class Tactic
+    attr_reader :_tactic
+    def initialize(pointer)
+      @_tactic = pointer
+    end
+
+    def solver
+      Z3::Solver.from_tactic(self)
+    end
+  end
+
+  class Solver
+    def self.from_tactic(tactic)
+      pointer = Z3::LowLevel.mk_solver_from_tactic(tactic)
+      new(pointer)
+    end
+
+    def initialize(pointer = ::Z3::LowLevel.mk_solver)
+      @_solver = pointer
+      Z3::LowLevel.solver_inc_ref(self)
+      reset_model!
+    end
+  end
+end
 
 class Day15 < AdventDay
-  EXPECTED_RESULTS = { 1 => 26, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 26, 2 => 56000011 }
 
   def first_part
     taken_spots = sensors_info.flatten(1).
@@ -26,6 +58,32 @@ class Day15 < AdventDay
   end
 
   def second_part
+    distances = sensors_info.map do |sensor, beacon|
+      [sensor, { beacon: beacon, distance: distance_between(sensor,beacon) }]
+    end.to_h
+
+    # Need to use a tactic because Z3 segfaults on default behaviour
+    solver = Z3::Tactic('smt').solver
+
+    x, y = Z3::Int("x"), Z3::Int("y")
+
+    abs = -> (v) { Z3::IfThenElse(v >= 0, v, -v) }
+    not_in_distance = distances.map do |(sx,sy), info|
+      ((abs.(x - sx) + abs.(y - sy) > info[:distance]))
+    end
+
+    solver.assert x >= coords_range.begin
+    solver.assert x <= coords_range.end
+
+    solver.assert y >= coords_range.begin
+    solver.assert y <= coords_range.end
+
+    solver.assert Z3::And(*not_in_distance)
+
+    if solver.satisfiable?
+      magic_coeff = 4_000_000
+      solver.model[x].to_i * magic_coeff + solver.model[y].to_i
+    end
   end
 
   private
@@ -49,6 +107,10 @@ class Day15 < AdventDay
 
   def studied_row
     debug? ? 10 : 2_000_000
+  end
+
+  def coords_range
+    debug? ? 0..20 : 0..4_000_000
   end
 
   def convert_data(data)
