@@ -65,7 +65,7 @@ class Day15 < AdventDay
 
     abs = -> (v) { Z3::IfThenElse(v >= 0, v, -v) }
     not_in_distance = sensors_info.map do |(sx,sy), beacon|
-      abs.(x - sx) + abs.(y - sy) > distance_between([sx,sy], beacon)
+      not abs.(x - sx) + abs.(y - sy) <= distance_between([sx,sy], beacon)
     end
     solver.assert Z3::And(*not_in_distance)
 
