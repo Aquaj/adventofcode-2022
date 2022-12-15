@@ -58,27 +58,22 @@ class Day15 < AdventDay
   end
 
   def second_part
-    distances = sensors_info.map do |sensor, beacon|
-      [sensor, { beacon: beacon, distance: distance_between(sensor,beacon) }]
-    end.to_h
-
-    # Need to use a tactic because Z3 segfaults on default behaviour
+    # Need to use a tactic because Z3 segfaults on default behaviour on my machine
     solver = Z3::Tactic('smt').solver
 
     x, y = Z3::Int("x"), Z3::Int("y")
 
     abs = -> (v) { Z3::IfThenElse(v >= 0, v, -v) }
-    not_in_distance = distances.map do |(sx,sy), info|
-      ((abs.(x - sx) + abs.(y - sy) > info[:distance]))
+    not_in_distance = sensors_info.map do |(sx,sy), beacon|
+      abs.(x - sx) + abs.(y - sy) > distance_between([sx,sy], beacon)
     end
+    solver.assert Z3::And(*not_in_distance)
 
     solver.assert x >= coords_range.begin
     solver.assert x <= coords_range.end
 
     solver.assert y >= coords_range.begin
     solver.assert y <= coords_range.end
-
-    solver.assert Z3::And(*not_in_distance)
 
     if solver.satisfiable?
       magic_coeff = 4_000_000
