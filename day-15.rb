@@ -4,19 +4,25 @@ class Day15 < AdventDay
   EXPECTED_RESULTS = { 1 => 26, 2 => nil }
 
   def first_part
-    distances = sensors_info.map do |sensor, beacon|
-      [sensor, { beacon: beacon, distance: distance_between(sensor,beacon) }]
-    end.to_h
+    taken_spots = sensors_info.flatten(1).
+      select { |(_,y)| y == studied_row }.
+      map(&:first).uniq
 
-    distances.map do |(sx,sy), info|
+    segments = sensors_info.map do |((sx,sy), beacon)|
       distance_to_row = (sy - studied_row).abs
-      next Set.new if distance_to_row > info[:distance]
-      remainder = info[:distance] - distance_to_row
+      distance_to_beacon = distance_between([sx,sy],beacon)
+      remainder = distance_to_beacon - distance_to_row
 
-      sensor = sx if sy == studied_row
-      beacon = info[:beacon][0] if info[:beacon][1] == studied_row
-      ((sx - remainder)..(sx + remainder)).to_set - [sensor, beacon]
-    end.reduce(&:|).count
+      next unless remainder.positive?
+
+      [sx - remainder, sx + remainder]
+    end
+
+    merge_down(segments).map do |(s,f)|
+      beacons_and_sensors_in_segment =  taken_spots.count { |o| o >= s && o <= f }
+      length = f - s + 1 # + 1 because we count both extremities
+      length - beacons_and_sensors_in_segment
+    end.sum
   end
 
   def second_part
@@ -24,13 +30,21 @@ class Day15 < AdventDay
 
   private
 
-  def detected_by?(sensor, coords:)
-    sensor_pos, info = sensor
-    distance_between(sensor_pos, coords) <= info[:distance]
-  end
-
   def distance_between(source, target)
     source.zip(target).map { |pair| pair.reduce(&:-).abs }.sum
+  end
+
+  def merge_down(segments)
+    segments.compact.sort.each_with_object([]) do |segment, merged|
+      last = merged.last
+      start, finish = last || []
+
+      if last && (start <= segment[0] && segment[0] <= finish)
+        last[-1] = [finish, segment[-1]].max
+      else
+        merged << segment
+      end
+    end
   end
 
   def studied_row
