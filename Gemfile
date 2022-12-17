@@ -4,7 +4,7 @@ gem 'byebug'
 
 # Support libraries
 gem 'algorithms'
-gem 'z3', '= 0.0.20221020'
+gem 'z3', '= 0.0.20221020', require: false
 
 # Framework dependencies
 gem 'dotenv'

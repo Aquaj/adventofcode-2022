@@ -46,7 +46,7 @@ module Algorithms
 
     edge_list = graph.edges
 
-    graph.coords.each do |_|
+    graph.nodes.each do |_|
       edge_list.each do |edge|
         cost = distance[edge.first] + graph.edge_cost(*edge)
         next unless distance[edge.last] > cost
