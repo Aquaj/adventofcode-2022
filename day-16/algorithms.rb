@@ -123,10 +123,6 @@ class Day16 < AdventDay
 
     return cache if time < 0
 
-    @count ||= 0
-    return if (@count += 1) >= 10
-    puts human_valve, elephant_valve
-
     increase_rate = open_valves.sum(&:flow_rate)
     theoretical_final_pressure = pressure + increase_rate * time
 

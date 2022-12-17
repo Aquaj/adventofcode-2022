@@ -58,7 +58,7 @@ class Day16 < AdventDay
   end
 
   # Not fully moelized for performance
-  def dfs_second(low_object: false)
+  def dfs_second(low_object: true)
     start = valves.find { |v| v.name == START_VALVE_NAME }
     remaining_time = MINUTES_BEFORE_ERUPTION - ELEPHANT_TEACHING_DURATION
 
