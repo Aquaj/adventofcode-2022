@@ -42,7 +42,7 @@ with other competitors.
 | ✔     | [Day 14: Regolith Reservoir](https://adventofcode.com/2022/day/14)      | 🌟       | 🌟       | [Solution](day-14.rb)
 | ✔     | [Day 15: Beacon Exclusion Zone](https://adventofcode.com/2022/day/15)   | 🌟       | 🌟       | [Solution](day-15.rb)
 | ✔     | [Day 16: Proboscidea Volcanium](https://adventofcode.com/2022/day/16)   | 🌟       | 🌟       | [Solution](day-16.rb)
-| ✔     | [Day 17: Pyroclastic Flow](https://adventofcode.com/2022/day/17)        | 🌟       |          | [Solution](day-17.rb)
+| ✔     | [Day 17: Pyroclastic Flow](https://adventofcode.com/2022/day/17)        | 🌟       | 🌟       | [Solution](day-17.rb)
 |       | [Day 18: TBD](https://adventofcode.com/2022/day/18)                     |          |          | [Solution](day-18.rb)
 |       | [Day 19: TBD](https://adventofcode.com/2022/day/19)                     |          |          | [Solution](day-19.rb)
 |       | [Day 20: TBD](https://adventofcode.com/2022/day/20)                     |          |          | [Solution](day-20.rb)
