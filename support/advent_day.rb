@@ -19,6 +19,7 @@ class AdventDay
       results = {}
       puts " - #{(Benchmark.measure { print "#1. #{(results[1] = self.new.run(1)).inspect.bold}" }.real * 1000).round(3)}ms"
       puts " - #{(Benchmark.measure { print "#2. #{(results[2] = self.new.run(2)).inspect.bold}" }.real * 1000).round(3)}ms"
+      results
     end
 
     def run_tests
