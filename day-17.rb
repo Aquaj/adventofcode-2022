@@ -62,11 +62,12 @@ class Day17 < AdventDay
         # Given a state S1, S2 = process(S1), and the fact rocks are in order
         # if we hit the cache it means we are looping:
         #
-        #   (process(SN) -> S1, process(S1) -> S2, ...,
-        #     process(SK) -> SK+1, process(SK+1) -> SK+2
-        #     process(SN-1) -> SN, process(SN) -> SK,
-        #     process(SK) -> SK+1, process(SK+1) -> SK+2, <-- looping
+        #   process(Sn) -> S1, process(S1) -> S2,
+        #     ...,
+        #     process(Sk) -> Sk+1, process(SK+1) -> SK+2,
         #     ...
+        #     process(Sn-1) -> Sn, process(Sn) -> Sk,
+        #     process(Sk) -> Sk+1, and so on
         #
         # So we can now just find the total height by summing:
         # - the height from before it loops, with
