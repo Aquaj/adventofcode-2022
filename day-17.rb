@@ -41,9 +41,12 @@ class Day17 < AdventDay
     infinite_rocks = rock_shapes.cycle
 
     cache = {}
-    state = { jet_pos: 0, state: Set.new }
+    state = { jet_pos: 0, state: Set.new, height: 0 }
     height = 0
     infinite_rocks.each_with_index do |rock, index|
+
+      # In case we actually reach the end before we can get mathy
+      height += state[:height]
       summit = state[:state].map { |c| c[Y] }.max || 0
       break summit + height + 1 if index == rocks_to_fall
 
@@ -51,23 +54,10 @@ class Day17 < AdventDay
       if cache[cache_key].nil? # Unknown state => process and save it
         to_save = process_rock(rock, state[:jet_pos], state[:state])
 
+        to_save[:index] = index # Useful to_identify the cache loop, see below
+
         # Compacting state to maximize cache reuse
-        local_summit = to_save[:state].map{|c| c[Y]}.max
-        window = 2
-        blocking = summit.towards(0).each_cons(window).find do |ys|
-          (0...CHAMBER_WIDTH).all? { |x| ys.any? { |y| to_save[:state].include? Vector[x,y] } }
-        end
-
-        if blocking #&& blocking.last != 0
-          level = blocking.min
-          reduced_state = to_save[:state].select { |c| c[Y] >= level }
-          levelled_state = move(reduced_state, Vector[0, -level])
-          to_save[:state] = levelled_state
-        end
-        to_save[:index] = index # Useful for the cache loop, see below
-        to_save[:height] = level.to_i
-
-        state = cache[cache_key] ||= to_save
+        state = cache[cache_key] ||= compact(to_save)
       else
         # Given a state S1, S2 = process(S1), and the fact rocks are in order
         # if we hit the cache it means we are looping:
@@ -81,7 +71,8 @@ class Day17 < AdventDay
         # So we can now just find the total height by summing:
         # - the height from before it loops, with
         # - the added height by each state in the loop
-        #     * the number of times the loop occurred, +
+        #     * the number of times the loop occurred, plus
+        # - the height gained by the last, partial run of the loop, and
         # - the summit of the last state.
 
         loop_start = cache[cache_key]
@@ -102,8 +93,6 @@ class Day17 < AdventDay
 
         break setup_height + body_height + last_run_height + summit
       end
-
-      height += state[:height]
     end
   end
 
@@ -135,6 +124,33 @@ class Day17 < AdventDay
     end
 
     { jet_pos: jet_pos, state: state }
+  end
+
+  def compact(to_compact)
+    state = to_compact.deep_copy
+    local_summit = state[:state].map{|c| c[Y]}.max
+
+    # Finding "cutoffs" in the chamber which no rock can fall below
+    search_window = 2
+    blocking = local_summit.towards(0).each_cons(search_window).find do |ys|
+      (0...CHAMBER_WIDTH).all? do |x|
+        ys.any? { |y| state[:state].include? Vector[x,y] }
+      end
+    end
+
+    # Compacting down by removing excess coordinates,
+    # then moving the remainder coordinates to match.
+    if blocking
+      level = blocking.min
+      reduced_state = state[:state].select { |c| c[Y] >= level }
+      levelled_state = move(reduced_state, Vector[0, -level])
+      state[:state] = levelled_state
+    end
+
+    # Storing the info for computation into `:height`
+    state[:height] = level.to_i
+
+    state
   end
 
   def render(state, rock: Set.new)
