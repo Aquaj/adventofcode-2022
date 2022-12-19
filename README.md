@@ -44,7 +44,7 @@ with other competitors.
 | ✔     | [Day 16: Proboscidea Volcanium](https://adventofcode.com/2022/day/16)   | 🌟       | 🌟       | [Solution](day-16.rb)
 | ✔     | [Day 17: Pyroclastic Flow](https://adventofcode.com/2022/day/17)        | 🌟       | 🌟       | [Solution](day-17.rb)
 | ✔     | [Day 18: Boiling Boulders](https://adventofcode.com/2022/day/18)        | 🌟       | 🌟       | [Solution](day-18.rb)
-|       | [Day 19: TBD](https://adventofcode.com/2022/day/19)                     |          |          | [Solution](day-19.rb)
+| ✔     | [Day 19: Not Enough Minerals](https://adventofcode.com/2022/day/19)     | 🌟       | 🌟       | [Solution](day-19.rb)
 |       | [Day 20: TBD](https://adventofcode.com/2022/day/20)                     |          |          | [Solution](day-20.rb)
 |       | [Day 21: TBD](https://adventofcode.com/2022/day/21)                     |          |          | [Solution](day-21.rb)
 |       | [Day 22: TBD](https://adventofcode.com/2022/day/22)                     |          |          | [Solution](day-22.rb)
