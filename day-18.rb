@@ -9,9 +9,7 @@ class Day18 < AdventDay
     surface_area(cubes)
   end
 
-  LavaCube = Struct.new(:coords, :neighbors)
   def second_part
-
     lava, air = compute_neighbors(lava_coords, track_adjacent: true)
 
     # compute pockets
