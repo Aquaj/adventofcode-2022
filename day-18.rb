@@ -3,18 +3,13 @@ require_relative 'common'
 class Day18 < AdventDay
   EXPECTED_RESULTS = { 1 => 64, 2 => 58 }
 
-  LavaCube = Struct.new(:coords, :neighbors) do
-    def inspect = "L#{coords.inspect}"
-  end
-
   def first_part
-    cubes = lava_coords.map { |c| [c, LavaCube.new(c, Set.new)] }.to_h
-    cubes.each do |coord, cube|
-      cube.neighbors = cubes.slice(*neighbors_2d(coord)).values
-    end
-    cubes.count * 6 - cubes.values.map(&:neighbors).map(&:count).sum
+    cubes = compute_neighbors(lava_coords)
+
+    cubes.sum { |cube, neighbors| 6 - neighbors.count }
   end
 
+  LavaCube = Struct.new(:coords, :neighbors)
   def second_part
     cubes = lava_coords.map { |c| [c, LavaCube.new(c, Set.new)] }.to_h
     air = Set.new
@@ -45,6 +40,13 @@ class Day18 < AdventDay
       [x,y-1,z], [x,y+1,z],
       [x,y,z-1], [x,y,z+1],
     ]
+  end
+
+  def compute_neighbors(cubes)
+    cubes.each_with_object({}) do |coords, neighbors|
+      neighbors_pos = neighbors_2d(coords)
+      neighbors[coords] = neighbors_pos.select { |n| cubes.include? n }
+    end
   end
 
   # BFS-ing our way into either the wall (pocket)
