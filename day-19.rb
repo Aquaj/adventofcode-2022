@@ -2,25 +2,26 @@ require_relative 'common'
 require 'z3'
 
 class Day19 < AdventDay
-  EXPECTED_RESULTS = { 1 => 33, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 33, 2 => 3472 }
 
   MINUTES_TO_EXTRACT = 24
 
   RESOURCES = %i[ore clay obsidian geode]
 
   def first_part
-    blueprints.map { |index, blueprint| index * max_geodes_with(blueprint) }.sum
+    blueprints.map { |index, blueprint| index * max_geodes_with(blueprint, minutes_to_extract: 24) }.sum
   end
 
   def second_part
+    blueprints.slice(1,2,3).map { |_,blueprint| max_geodes_with(blueprint, minutes_to_extract: 32) }.reduce(&:*)
   end
 
   private
 
-  def max_geodes_with(blueprint)
+  def max_geodes_with(blueprint, minutes_to_extract:)
     solver = Z3::Optimize.new
 
-    problem = Array.new(MINUTES_TO_EXTRACT + 1) do |time|
+    problem = Array.new(minutes_to_extract + 1) do |time|
       {
         spent: RESOURCES.map { |r| [r, Z3::Int("spent[#{time}][#{r}]")] }.to_h,
         built: RESOURCES.map { |r| [r, Z3::Int("built[#{time}][#{r}]")] }.to_h,
@@ -29,7 +30,7 @@ class Day19 < AdventDay
       }
     end
 
-    (1..MINUTES_TO_EXTRACT).each do |time|
+    (1..minutes_to_extract).each do |time|
       resource_evolution = RESOURCES.map do |resource|
         existing_resource = problem[time - 1][:resources][resource]
         new_resource = problem[time - 1][:robots][resource]
@@ -64,9 +65,9 @@ class Day19 < AdventDay
       problem[0][:robots][:ore] == 1,
     )
 
-    solver.maximize problem[24][:resources][:geode]
+    solver.maximize problem[-1][:resources][:geode]
 
-    solver.model[problem[24][:resources][:geode]].to_i if solver.satisfiable?
+    solver.model[problem[-1][:resources][:geode]].to_i if solver.satisfiable?
   end
 
   def convert_data(data)
