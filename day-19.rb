@@ -4,8 +4,6 @@ require 'z3'
 class Day19 < AdventDay
   EXPECTED_RESULTS = { 1 => 33, 2 => 3472 }
 
-  MINUTES_TO_EXTRACT = 24
-
   RESOURCES = %i[ore clay obsidian geode]
 
   def first_part
