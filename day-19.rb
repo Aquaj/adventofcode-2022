@@ -75,7 +75,8 @@ class Day19 < AdventDay
       id, definitions = blueprint.match(/Blueprint (\d+): (.*)/).captures
       robots = definitions.scan /Each (?<type>\w+) robot costs (?<costs>.*?)\./
       robots = robots.map do |type, costs|
-        [type.to_sym, costs.scan(/(\d+) (\w+)/).to_h.reverse.transform_keys(&:to_sym).transform_values(&:to_i)]
+        costs = costs.scan(/(\d+) (\w+)/).map { |cost, resource| [resource.to_sym, cost.to_i] }
+        [type.to_sym, costs.to_h]
       end.to_h
       [id.to_i, robots]
     end.to_h
