@@ -1,6 +1,5 @@
 require_relative '../patches'
 
-# Inspired by RubyGems's Gem::List [implem](https://github.com/rubygems/rubygems/blob/master/lib/rubygems/util/list.rb)
 class LinkedList
   include Enumerable
 
