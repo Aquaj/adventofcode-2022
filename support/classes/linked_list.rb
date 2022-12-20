@@ -16,6 +16,11 @@ class LinkedList
     @length = collection.length
   end
 
+  def loop!
+    @last.tail = @first
+    @first.head = @last
+  end
+
   def inspect
     to_a.map { |e,_| "[#{e.inspect}]" }.join(" => ")
   end
