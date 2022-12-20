@@ -19,6 +19,5 @@ require_relative 'support/algorithms'
 
 require_relative 'support/classes/grid'
 require_relative 'support/classes/linked_list'
-require_relative 'support/classes/linked_loop'
 
 require_relative 'support/setup'
