@@ -1,3 +1,12 @@
+GIT
+  remote: https://github.com/chriswailes/RLTK
+  revision: e5fb690ce5a6a774ef39b1cb52dbaf95d361fe64
+  branch: master
+  specs:
+    rltk (3.0.2)
+      ffi (>= 1.0.0)
+      filigree (>= 0.2.0, < 0.4.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -11,6 +20,7 @@ GEM
       ruby2_keywords (>= 0.0.4)
     faraday-net_http (3.0.2)
     ffi (1.15.5)
+    filigree (0.3.3)
     matrix (0.4.2)
     ruby2_keywords (0.0.5)
     z3 (0.0.20221020)
@@ -27,6 +37,7 @@ DEPENDENCIES
   dotenv
   faraday
   matrix
+  rltk!
   z3 (= 0.0.20221020)
 
 BUNDLED WITH
