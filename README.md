@@ -47,7 +47,7 @@ with other competitors.
 | ✔     | [Day 19: Not Enough Minerals](https://adventofcode.com/2022/day/19)      | 🌟       | 🌟       | [Solution](day-19.rb)
 | ✔     | [Day 20: Grove Positioning System](https://adventofcode.com/2022/day/20) | 🌟       | 🌟       | [Solution](day-20.rb)
 | ✔     | [Day 21: Monkey Math](https://adventofcode.com/2022/day/21)              | 🌟       | 🌟       | [Solution](day-21.rb)
-|       | [Day 22: TBD](https://adventofcode.com/2022/day/22)                      |          |          | [Solution](day-22.rb)
+| ✔     | [Day 22: Monkey Map](https://adventofcode.com/2022/day/22)               | 🌟       | 🌟       | [Solution](day-22.rb)
 |       | [Day 23: TBD](https://adventofcode.com/2022/day/23)                      |          |          | [Solution](day-23.rb)
 |       | [Day 24: TBD](https://adventofcode.com/2022/day/24)                      |          |          | [Solution](day-24.rb)
 |       | [Day 25: TBD](https://adventofcode.com/2022/day/25)                      |          |          | [Solution](day-25.rb)
