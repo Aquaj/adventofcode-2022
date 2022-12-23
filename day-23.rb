@@ -10,8 +10,19 @@ class Day23 < AdventDay
     E: %i[SE E NE],
     W: %i[SW W NW],
   }
+  OFFSETS = {
+    NE: [-1, -1],
+    N:  [0,  -1],
+    NW: [1,  -1],
+    SE: [-1, 1],
+    S:  [0,  1],
+    SW: [1,  1],
+    E:  [-1, 0],
+    W:  [1,  0],
+  }
+
   def first_part
-    elves = input.deep_copy
+    elves = input
     priority = 0
 
     10.times do
@@ -27,7 +38,7 @@ class Day23 < AdventDay
 
   def second_part
     priority = 0
-    elves = input.deep_copy
+    elves = input
 
     (1..).each do |round|
       priorities = (SUGGESTIONS * 2)[priority, SUGGESTIONS.length]
@@ -41,35 +52,43 @@ class Day23 < AdventDay
   private
 
   def play_round(to_move, priorities: SUGGESTIONS)
+    new_moves = Set.new
     suggestions = to_move.each_with_object({}) do |elf, moves|
       if OFFSETS.none? { |_,offset| to_move.include? add(elf, offset) }
-        moves[nil] ||= { count: 0, elves: [] }
-        moves[nil][:elves] << elf
-        moves[nil][:count] += 1
+        new_moves << elf
         next
       end
 
-      move = priorities.find { |move| new_pos = new_position(elf, move, elves: to_move); break new_pos if new_pos }
+      move = priorities.find do |move|
+        new_pos = new_position(elf, move, elves: to_move)
+        break new_pos if new_pos
+      end
+      next new_moves << elf unless move
 
-      moves[move] ||= { count: 0, elves: [] }
-      moves[move][:elves] << elf
-      moves[move][:count] += 1
+      moves[move] ||= []
+      moves[move] << elf
     end
 
-    undecided = suggestions.delete(nil)[:elves]
-    suggestions.each_with_object(undecided) do |(move, data), moves|
-      if data[:count] == 1
-        moves << move
+    suggestions.each do |move, elves|
+      if elves.size == 1
+        new_moves << move
       else
-        data[:elves].each { moves << _1 }
+        elves.each { new_moves << _1 }
       end
-    end.to_set
+    end
+    new_moves
   end
 
   def add(pos1,pos2)
-    x1,y1 = pos1
-    x2,y2 = pos2
-    [x1+x2, y1+y2]
+    [pos1[0]+pos2[0], pos1[1]+pos2[1]]
+  end
+
+  def new_position(elf, direction, elves:)
+    blocked = BLOCKERS[direction].any? do |block|
+      block_pos = add(OFFSETS[block], elf)
+      elves.include? block_pos
+    end
+    blocked ? nil : add(elf, OFFSETS[direction])
   end
 
   def render(set)
@@ -83,24 +102,6 @@ class Day23 < AdventDay
       puts l
     end
     puts
-  end
-
-  OFFSETS = {
-    NE: [-1, -1],
-    N:  [0,  -1],
-    NW: [1,  -1],
-    SE: [-1, 1],
-    S:  [0,  1],
-    SW: [1,  1],
-    E:  [-1, 0],
-    W:  [1,  0],
-  }
-  def new_position(elf, direction, elves:)
-    blocked = BLOCKERS[direction].any? do |block|
-      block_pos = add(OFFSETS[block], elf)
-      elves.include? block_pos
-    end
-    blocked ? nil : add(elf, OFFSETS[direction])
   end
 
   def convert_data(data)
