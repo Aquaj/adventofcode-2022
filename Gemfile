@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'byebug'
+gem 'pry-byebug'
 
 # Support libraries
 gem 'algorithms'
