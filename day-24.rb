@@ -18,7 +18,7 @@ class Day24 < AdventDay
   end
   using BitOps
 
-  EXPECTED_RESULTS = { 1 => 18, 2 => nil }
+  EXPECTED_RESULTS = { 1 => 18, 2 => 54 }
 
   class Valley
     BLIZZARD_CHARS = { up: '^', down: 'v', left: '<', right: '>' }
@@ -46,8 +46,6 @@ class Day24 < AdventDay
       # keeping obsolete cache stresses me out
       @gridmask, @next_valley = nil
       true
-      rescue
-        byebug
     end
 
     def gridmask
@@ -76,15 +74,17 @@ class Day24 < AdventDay
 
     def neighbors_of(x,y)
       @neighbors ||= {}
-      potential_neighbours = [[x,y+1],[x,y-1],[x+1,y],[x-1,y]]
+      @neighbors[[x,y]] ||= begin
+        potential_neighbours = [[x,y+1],[x,y-1],[x+1,y],[x-1,y]]
 
-      potential_neighbours << [0, -1] if [x,y] == [0,0] # Entry
-      exit_step = [width - 1, height - 1]
-      potential_neighbours << [width - 1, height] if [x,y] == exit_step # Exit
+        potential_neighbours.reject! { |(x,y)| blizzard?(x,y) }
+        potential_neighbours.reject! { |(x,y)| x < 0 || x >= width || y < 0 || y >= height }
 
-      @neighbors[[x,y]] ||= potential_neighbours.
-        reject { |(x,y)| blizzard?(x,y) }.
-        reject { |(x,y)| x < 0 || x >= width || y < 0 || y >= height }
+        potential_neighbours << [0, -1] if [x,y] == [0,0] # Entry
+        exit_step = [width - 1, height - 1]
+        potential_neighbours << [width - 1, height] if [x,y] == exit_step # Exit
+        potential_neighbours
+      end
     end
 
     def blizzard?(x,y)
@@ -147,6 +147,19 @@ class Day24 < AdventDay
   end
 
   def second_part
+    valley = input
+    start = [0, -1]
+    goal = [valley.width - 1, valley.height]
+
+    way_there = find_route(start, goal, valley)
+
+    way_back = find_route(goal, start, way_there.last.valley)
+
+    way_there_again =find_route(start, goal,  way_back.last.valley)
+
+    way_there.length - 1 +
+      way_back.length - 1 +
+      way_there_again.length - 1
   end
 
   private
