@@ -182,7 +182,7 @@ class Day24 < AdventDay
 
     candidate_set = Set.new
     candidates = PriorityQueue.new()
-    heuristic = ->(pos) { [-shortest_time[pos], -(goal[0] - pos.x) + (goal[1] - pos.y)] } # Manhattan distance
+    heuristic = ->(pos) { -shortest_time[pos] } # Manhattan distance
 
     candidate_set << start
     candidates.push(start, 0)
