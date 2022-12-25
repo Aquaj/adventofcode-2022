@@ -50,7 +50,7 @@ with other competitors.
 | ✔     | [Day 22: Monkey Map](https://adventofcode.com/2022/day/22)               | 🌟       | 🌟       | [Solution](day-22.rb)
 | ✔     | [Day 23: Unstable Diffusion](https://adventofcode.com/2022/day/23)       | 🌟       | 🌟       | [Solution](day-23.rb)
 | ✔     | [Day 24: Blizzard Basin](https://adventofcode.com/2022/day/24)           | 🌟       | 🌟       | [Solution](day-24.rb)
-|       | [Day 25: TBD](https://adventofcode.com/2022/day/25)                      |          |          | [Solution](day-25.rb)
+| ✔     | [Day 25: Full of Hot Air](https://adventofcode.com/2022/day/25)          | 🌟       | 🌟       | [Solution](day-25.rb)
 
 ## Running the code
 
