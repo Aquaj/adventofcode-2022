@@ -18,10 +18,25 @@ class Day25 < AdventDay
   end
 
   def second_part
-    '🌟'
+    solved_all_days = (1..24).all? { |day| [1,2].all? { |part| got_star?(day, part) } }
+    solved_today = got_star?(25, 1)
+
+    if solved_all_days && solved_today
+      '🌟'
+    else
+      '❌'
+    end
   end
 
   private
+
+  def got_star?(day, part)
+    formatted_day = day.to_s.rjust(2, '0')
+    require_relative "./day-#{formatted_day}.rb"
+
+    solver = Object.const_get("Day#{day}")
+    solver.new.tap(&:debug!).run(part) == solver::EXPECTED_RESULTS[part]
+  end
 
   def from_snafu(snafu)
     snafu.chars.reverse.each_with_index.reduce(0) do |num, (digit, rank)|

@@ -4,7 +4,7 @@ class Day5 < AdventDay
   EXPECTED_RESULTS = { 1 => "CMZ", 2 => "MCD" }
 
   def first_part
-    crates, instructions = *input
+    crates, instructions = *input.deep_copy
 
     result_stacks = instructions.each_with_object(crates.dup) do |(number, from, to), crates|
       to_move = remove_many(number, crates[from])
@@ -15,7 +15,7 @@ class Day5 < AdventDay
   end
 
   def second_part
-    crates, instructions = *input
+    crates, instructions = *input.deep_copy
 
     result_stacks = instructions.each_with_object(crates.dup) do |(number, from, to), crates|
       to_move = remove_many(number, crates[from])
