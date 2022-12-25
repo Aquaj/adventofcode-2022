@@ -32,7 +32,7 @@ class Day25 < AdventDay
 
   def got_star?(day, part)
     formatted_day = day.to_s.rjust(2, '0')
-    require_relative "./day-#{formatted_day}.rb"
+    require_relative "./day-#{formatted_day}.rb" unless Object.const_defined?("Day#{day}")
 
     solver = Object.const_get("Day#{day}")
     solver.new.tap(&:debug!).run(part) == solver::EXPECTED_RESULTS[part]
