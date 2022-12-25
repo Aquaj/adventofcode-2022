@@ -1,4 +1,4 @@
-# advent-of-code-2022 [![Examples](../../actions/workflows/examples.yml/badge.svg)](../../actions/workflows/examples.yml) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+# advent-of-code-2022 [![Examples](../../actions/workflows/examples.yml/badge.svg)](../../actions/workflows/examples.yml) [![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT) 🌟
 
 [Advent of Code 2022 🎄](https://adventofcode.com/year/2022) solutions by `@Aquaj`
 
@@ -18,8 +18,7 @@ Each year, starting on Dec 1st, an advent calendar of small programming puzzles 
   Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first. Each puzzle grants one star. Good luck!
 
 **These were not written as example of clean or efficient code** but are simply my attempts at finding the answers to
-each day's puzzle as quickly as possible. Performance logging was added simply as a fun way to compare implementations
-with other competitors.
+each day's puzzle. Performance logging was added simply as a fun way to compare implementations with other competitors.
 
 ## Puzzles
 
