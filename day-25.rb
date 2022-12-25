@@ -52,4 +52,4 @@ class Day25 < AdventDay
   alias_method :snafus, :input
 end
 
-Day25.solve
+Day25.solve if __FILE__ == $0

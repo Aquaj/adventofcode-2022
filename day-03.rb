@@ -40,4 +40,4 @@ class Day3 < AdventDay
   alias_method :rucksacks, :input
 end
 
-Day3.solve
+Day3.solve if __FILE__ == $0

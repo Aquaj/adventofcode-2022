@@ -88,4 +88,4 @@ class Day12 < AdventDay
   alias_method :readout, :input
 end
 
-Day12.solve
+Day12.solve if __FILE__ == $0

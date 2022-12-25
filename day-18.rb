@@ -85,4 +85,4 @@ class Day18 < AdventDay
   alias_method :lava_coords, :input
 end
 
-Day18.solve
+Day18.solve if __FILE__ == $0

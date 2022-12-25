@@ -82,4 +82,4 @@ class Day19 < AdventDay
   alias_method :blueprints, :input
 end
 
-Day19.solve
+Day19.solve if __FILE__ == $0

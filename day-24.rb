@@ -225,4 +225,4 @@ class Day24 < AdventDay
   end
 end
 
-Day24.solve
+Day24.solve if __FILE__ == $0

@@ -25,4 +25,4 @@ class Day4 < AdventDay
   alias_method :assignments, :input
 end
 
-Day4.solve
+Day4.solve if __FILE__ == $0

@@ -95,4 +95,4 @@ class Day14 < AdventDay
   alias_method :rock_paths, :input
 end
 
-Day14.solve
+Day14.solve if __FILE__ == $0

@@ -52,4 +52,4 @@ class Day8 < AdventDay
   alias_method :tree_map, :input
 end
 
-Day8.solve
+Day8.solve if __FILE__ == $0

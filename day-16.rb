@@ -117,4 +117,4 @@ class Day16 < AdventDay
   alias_method :valves, :input
 end
 
-Day16.solve
+Day16.solve if __FILE__ == $0

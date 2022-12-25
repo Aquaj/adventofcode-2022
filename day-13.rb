@@ -68,4 +68,4 @@ class Day13 < AdventDay
   end
 end
 
-Day13.solve
+Day13.solve if __FILE__ == $0

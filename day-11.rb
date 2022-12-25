@@ -82,4 +82,4 @@ class Day11 < AdventDay
     eval("-> (old) { #{operation} }")
 end
 
-Day11.solve
+Day11.solve if __FILE__ == $0

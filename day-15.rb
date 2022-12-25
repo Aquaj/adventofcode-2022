@@ -118,4 +118,4 @@ class Day15 < AdventDay
   alias_method :sensors_info, :input
 end
 
-Day15.solve
+Day15.solve if __FILE__ == $0

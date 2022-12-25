@@ -47,4 +47,4 @@ class Day20 < AdventDay
   alias_method :file, :input
 end
 
-Day20.solve
+Day20.solve if __FILE__ == $0
