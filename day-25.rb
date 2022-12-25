@@ -35,6 +35,10 @@ class Day25 < AdventDay
     require_relative "./day-#{formatted_day}.rb" unless Object.const_defined?("Day#{day}")
 
     solver = Object.const_get("Day#{day}")
+    # Ideally we'd've liked to run in the same mode as this file is actually run.
+    # But we don't store the actual inputs in the repo and even less so the actual
+    # answers, so we have to run these as debug instead, even if it doesn't
+    # _guarantee_ that the exercises have been solved.
     solver.new.tap(&:debug!).run(part) == solver::EXPECTED_RESULTS[part]
   end
 
